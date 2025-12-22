@@ -1,0 +1,58 @@
+#define AppName "FlutterPassword"
+#define AppPublisher "FlutterPassword"
+#define AppURL "https://github.com/qq61538187/flutterpassword"
+
+; 这些变量由 CI 通过 ISCC 的 /D 参数传入：
+; - AppVersion
+; - AppExeName
+; - SourceDir
+; - OutputDir
+#ifndef AppVersion
+  #define AppVersion "0.0.0"
+#endif
+#ifndef AppExeName
+  #define AppExeName "FlutterPassword.exe"
+#endif
+#ifndef SourceDir
+  #define SourceDir "build\windows\x64\runner\Release"
+#endif
+#ifndef OutputDir
+  #define OutputDir "dist"
+#endif
+
+[Setup]
+AppId={{8E1B7B32-AF4E-5B8F-AE8E-8C3B8E5E3F2B}
+AppName={#AppName}
+AppVersion={#AppVersion}
+AppPublisher={#AppPublisher}
+AppPublisherURL={#AppURL}
+AppSupportURL={#AppURL}
+AppUpdatesURL={#AppURL}
+DefaultDirName={autopf}\{#AppName}
+DefaultGroupName={#AppName}
+DisableProgramGroupPage=yes
+OutputDir={#OutputDir}
+OutputBaseFilename={#AppName}-{#AppVersion}-Setup
+Compression=lzma
+SolidCompression=yes
+WizardStyle=modern
+
+[Languages]
+; 说明：
+; - 部分 CI Runner 的 Inno Setup 安装不包含 ChineseSimplified.isl，导致编译失败
+; - 为保证 CI 稳定出包，这里默认使用 Inno Setup 自带的 Default.isl（英文）
+; 如需中文安装界面：可以在本仓库内自带 isl 文件后改为相对路径引用
+Name: "english"; MessagesFile: "compiler:Default.isl"
+
+[Tasks]
+Name: "desktopicon"; Description: "创建桌面快捷方式"; GroupDescription: "附加任务"; Flags: unchecked
+
+[Files]
+; 打包 Flutter Windows Release 目录下的全部文件（含 DLL/资源）
+Source: "{#SourceDir}\*"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs createallsubdirs
+
+[Icons]
+Name: "{group}\{#AppName}"; Filename: "{app}\{#AppExeName}"
+Name: "{group}\卸载 {#AppName}"; Filename: "{uninstallexe}"
+Name: "{autodesktop}\{#AppName}"; Filename: "{app}\{#AppExeName}"; Tasks: desktopicon
+

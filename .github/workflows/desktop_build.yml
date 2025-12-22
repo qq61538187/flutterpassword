@@ -1,0 +1,214 @@
+name: Build Desktop (macOS DMG & Windows Installer)
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build:
+    name: Build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, windows-latest]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # 安装指定版本 Flutter（与你本地保持一致）
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          flutter-version: "3.38.3"
+          cache: true
+
+      - name: Flutter doctor (optional)
+        run: flutter doctor -v
+
+      - name: Read app version
+        shell: bash
+        run: |
+          set -euo pipefail
+          # 从 pubspec.yaml 读取 version:，并做清洗：
+          # - 去掉 build number（+ 后面的内容）
+          # - 去掉 Windows 可能带来的 \r
+          # - 仅保留 [0-9A-Za-z._-]，避免文件名/安装包名非法
+          raw="$(grep -E '^version:' pubspec.yaml | head -n 1 | sed 's/^version:[[:space:]]*//')"
+          ver="${raw%%+*}"
+          ver="$(printf '%s' "$ver" | tr -d '\r\n')"
+          ver="$(printf '%s' "$ver" | tr -cd '0-9A-Za-z._-')"
+          if [ -z "$ver" ]; then
+            echo "无法从 pubspec.yaml 解析 version:" >&2
+            exit 1
+          fi
+          echo "APP_VERSION=$ver"
+          echo "APP_VERSION=$ver" >> "$GITHUB_ENV"
+
+      - name: Pub get
+        run: flutter pub get
+
+      # 生成代码（如 Hive / build_runner），避免 CI 因缺少 *.g.dart 失败
+      - name: Build runner
+        run: dart run build_runner build --delete-conflicting-outputs
+
+      # 从源图标生成应用图标（macOS 和 Windows）
+      - name: Generate app icons
+        shell: bash
+        run: |
+          set -euo pipefail
+          SOURCE_ICON="public/FlutterPassword.png"
+          
+          if [ ! -f "$SOURCE_ICON" ]; then
+            echo "⚠️  源图标文件不存在: $SOURCE_ICON，跳过图标生成"
+            exit 0
+          fi
+          
+          echo "🎨 从 $SOURCE_ICON 生成应用图标..."
+          
+          # 生成 macOS 图标（需要 sips 命令，macOS 自带）
+          if [ "${{ runner.os }}" == "macOS" ]; then
+            echo "📱 生成 macOS 图标..."
+            mkdir -p macos/Runner/Assets.xcassets/AppIcon.appiconset
+            sips -z 16 16 "$SOURCE_ICON" --out macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_16.png
+            sips -z 32 32 "$SOURCE_ICON" --out macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_32.png
+            sips -z 64 64 "$SOURCE_ICON" --out macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_64.png
+            sips -z 128 128 "$SOURCE_ICON" --out macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_128.png
+            sips -z 256 256 "$SOURCE_ICON" --out macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_256.png
+            sips -z 512 512 "$SOURCE_ICON" --out macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_512.png
+            cp "$SOURCE_ICON" macos/Runner/Assets.xcassets/AppIcon.appiconset/app_icon_1024.png
+            echo "✅ macOS 图标生成完成"
+          fi
+          
+          # 生成 Windows 图标（需要 Python + PIL/Pillow）
+          if [ "${{ runner.os }}" == "Windows" ]; then
+            echo "🪟 生成 Windows 图标..."
+            # 检查 Python 和 Pillow 是否可用
+            if python -c "from PIL import Image" 2>/dev/null; then
+              python -c "from PIL import Image; import os; img = Image.open('$SOURCE_ICON'); sizes = [(16, 16), (32, 32), (48, 48), (64, 64), (128, 128), (256, 256)]; icons = [img.resize(size, Image.Resampling.LANCZOS) for size in sizes]; os.makedirs('windows/runner/resources', exist_ok=True); img.save('windows/runner/resources/app_icon.ico', format='ICO', sizes=[(s[0], s[1]) for s in sizes]); print('✅ Windows 图标生成完成')"
+            else
+              echo "⚠️  Python 或 Pillow 不可用，跳过 Windows 图标生成（将使用仓库中的现有图标）"
+            fi
+          fi
+
+      - name: Build macOS (Release)
+        if: runner.os == 'macOS'
+        run: flutter build macos --release
+
+      - name: Build Windows (Release)
+        if: runner.os == 'Windows'
+        run: flutter build windows --release
+
+      # ===== macOS：生成 DMG（可选：签名/公证）=====
+      # 如果你配置了签名/公证所需 secrets，会自动执行签名与 notarize；否则仅生成未签名 DMG（用于内测）。
+      - name: macOS Sign app (optional)
+        if: runner.os == 'macOS' && env.MACOS_CERT_P12_BASE64 != '' && env.MACOS_CERT_PASSWORD != '' && env.MACOS_SIGNING_IDENTITY != ''
+        env:
+          MACOS_CERT_P12_BASE64: ${{ secrets.MACOS_CERT_P12_BASE64 }}
+          MACOS_CERT_PASSWORD: ${{ secrets.MACOS_CERT_PASSWORD }}
+          MACOS_SIGNING_IDENTITY: ${{ secrets.MACOS_SIGNING_IDENTITY }}
+        shell: bash
+        run: |
+          set -euxo pipefail
+          KEYCHAIN_PATH="$RUNNER_TEMP/build.keychain-db"
+          CERT_PATH="$RUNNER_TEMP/cert.p12"
+          echo "$MACOS_CERT_P12_BASE64" | base64 --decode > "$CERT_PATH"
+          security create-keychain -p "temp" "$KEYCHAIN_PATH"
+          security set-keychain-settings -lut 21600 "$KEYCHAIN_PATH"
+          security unlock-keychain -p "temp" "$KEYCHAIN_PATH"
+          security import "$CERT_PATH" -P "$MACOS_CERT_PASSWORD" -A -t cert -f pkcs12 -k "$KEYCHAIN_PATH"
+          security list-keychains -d user -s "$KEYCHAIN_PATH"
+          security set-key-partition-list -S apple-tool:,apple: -s -k "temp" "$KEYCHAIN_PATH"
+
+          APP_DIR="build/macos/Build/Products/Release"
+          APP_PATH="$(find "$APP_DIR" -maxdepth 1 -name '*.app' -print -quit)"
+          if [ -z "$APP_PATH" ]; then
+            echo "未找到 .app 产物，目录如下："
+            ls -lah "$APP_DIR" || true
+            exit 1
+          fi
+          codesign --force --deep --options runtime --timestamp --sign "$MACOS_SIGNING_IDENTITY" "$APP_PATH"
+
+      - name: Create macOS DMG
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          set -euxo pipefail
+          APP_DIR="build/macos/Build/Products/Release"
+          APP_PATH="$(find "$APP_DIR" -maxdepth 1 -name '*.app' -print -quit)"
+          if [ -z "$APP_PATH" ]; then
+            echo "未找到 .app 产物，目录如下："
+            ls -lah "$APP_DIR" || true
+            exit 1
+          fi
+          DMG_NAME="FlutterPassword-${APP_VERSION}-macos.dmg"
+          hdiutil create -volname "FlutterPassword" -srcfolder "$APP_PATH" -ov -format UDZO "$DMG_NAME"
+          ls -lah "$DMG_NAME"
+
+      - name: macOS Notarize DMG (optional)
+        if: runner.os == 'macOS' && env.APPLE_ID != '' && env.APPLE_TEAM_ID != '' && env.APPLE_APP_SPECIFIC_PASSWORD != ''
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
+        shell: bash
+        run: |
+          set -euxo pipefail
+          DMG_NAME="FlutterPassword-${APP_VERSION}-macos.dmg"
+          xcrun notarytool submit "$DMG_NAME" --apple-id "$APPLE_ID" --team-id "$APPLE_TEAM_ID" --password "$APPLE_APP_SPECIFIC_PASSWORD" --wait
+          xcrun stapler staple "$DMG_NAME" || true
+
+      # ===== Windows：生成 Inno Setup 安装包 EXE =====
+      - name: Install Inno Setup
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          choco install innosetup --yes --no-progress
+
+      - name: Build Windows installer (Inno Setup)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = "Stop"
+          $src = "build\\windows\\x64\\runner\\Release"
+          if (!(Test-Path $src)) { throw "Release folder not found: $src" }
+          # Inno Setup 对相对路径的解析基于 .iss 所在目录，容易导致找不到文件；
+          # 这里强制转成绝对路径传给 ISCC。
+          $srcAbs = (Resolve-Path $src).Path
+          $exe = Get-ChildItem -Path $srcAbs -Filter *.exe | Select-Object -First 1
+          if ($null -eq $exe) { throw "No exe found in $src" }
+          $outDir = "$pwd\\dist"
+          New-Item -ItemType Directory -Force -Path $outDir | Out-Null
+          $outDirAbs = (Resolve-Path $outDir).Path
+          $iscc = "${env:ProgramFiles(x86)}\\Inno Setup 6\\ISCC.exe"
+          if (!(Test-Path $iscc)) { throw "ISCC not found: $iscc" }
+          & $iscc `
+            "/DAppVersion=$env:APP_VERSION" `
+            "/DAppExeName=$($exe.Name)" `
+            "/DSourceDir=$srcAbs" `
+            "/DOutputDir=$outDirAbs" `
+            "packaging\\windows\\FlutterPassword.iss"
+          Get-ChildItem -Path $outDir | Format-List
+
+      - name: Upload artifact (macOS)
+        if: runner.os == 'macOS'
+        uses: actions/upload-artifact@v4
+        with:
+          name: FlutterPassword-macOS
+          path: |
+            FlutterPassword-${{ env.APP_VERSION }}-macos.dmg
+          if-no-files-found: error
+
+      - name: Upload artifact (Windows)
+        if: runner.os == 'Windows'
+        uses: actions/upload-artifact@v4
+        with:
+          name: FlutterPassword-Windows
+          path: |
+            dist/*.exe
+          if-no-files-found: error
+
