@@ -262,47 +262,14 @@ jobs:
 
       - name: Upload artifact (macOS)
         if: runner.os == 'macOS'
-        shell: bash
-        run: |
-          APP_VERSION="${APP_VERSION:-$(cat app_version.txt)}"
-          DMG_NAME="FlutterPassword-${APP_VERSION}-macos.dmg"
-          if [ ! -f "$DMG_NAME" ]; then
-            echo "❌ DMG 文件不存在: $DMG_NAME"
-            ls -lah *.dmg 2>/dev/null || echo "当前目录没有 DMG 文件"
-            exit 1
-          fi
-          echo "✅ 找到 DMG 文件: $DMG_NAME"
-          ls -lh "$DMG_NAME"
-        continue-on-error: false
-      
-      - name: Upload DMG artifact
-        if: runner.os == 'macOS'
         uses: actions/upload-artifact@v4
         with:
           name: FlutterPassword-macOS
           path: |
-            FlutterPassword-*-macos.dmg
+            FlutterPassword-${{ env.APP_VERSION }}-macos.dmg
           if-no-files-found: error
-          retention-days: 30
-          # 注意：GitHub Actions 会自动将 artifact 压缩为 zip
-          # 下载后解压即可得到 DMG 文件
 
-      - name: Verify Windows installer
-        if: runner.os == 'Windows'
-        shell: pwsh
-        run: |
-          $installer = Get-ChildItem -Path "dist" -Filter *.exe -ErrorAction SilentlyContinue | Select-Object -First 1
-          if ($null -eq $installer) {
-            Write-Host "❌ 安装包文件不存在"
-            Write-Host "dist 目录内容:"
-            Get-ChildItem -Path "dist" -ErrorAction SilentlyContinue | Format-List
-            exit 1
-          }
-          Write-Host "✅ 找到安装包: $($installer.FullName)"
-          Write-Host "   大小: $([math]::Round($installer.Length / 1MB, 2)) MB"
-        continue-on-error: false
-      
-      - name: Upload Windows installer artifact
+      - name: Upload artifact (Windows)
         if: runner.os == 'Windows'
         uses: actions/upload-artifact@v4
         with:
@@ -310,9 +277,6 @@ jobs:
           path: |
             dist/*.exe
           if-no-files-found: error
-          retention-days: 30
-          # 注意：GitHub Actions 会自动将 artifact 压缩为 zip
-          # 下载后解压即可得到 EXE 安装包
 
       # ===== 可选：创建 GitHub Release 并直接上传 DMG/EXE（不压缩）=====
       # 如果需要直接提供 DMG/EXE 文件（不压缩），可以取消下面的注释
