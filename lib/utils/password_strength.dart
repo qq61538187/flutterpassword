@@ -25,7 +25,7 @@ class PasswordStrengthChecker {
     if (password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) score += 1;
 
     // 复杂度检查
-    if (password.length >= 8 && 
+    if (password.length >= 8 &&
         password.contains(RegExp(r'[a-z]')) &&
         password.contains(RegExp(r'[A-Z]')) &&
         password.contains(RegExp(r'[0-9]'))) {
@@ -64,4 +64,3 @@ class PasswordStrengthChecker {
     }
   }
 }
-

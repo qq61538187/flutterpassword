@@ -105,4 +105,3 @@ class ParticlePainter extends CustomPainter {
   @override
   bool shouldRepaint(ParticlePainter oldDelegate) => true;
 }
-

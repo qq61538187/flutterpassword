@@ -66,7 +66,8 @@ class Sidebar extends StatelessWidget {
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
-                      borderRadius: BorderRadius.circular(AppTheme.borderRadiusSmall),
+                      borderRadius:
+                          BorderRadius.circular(AppTheme.borderRadiusSmall),
                       boxShadow: [
                         BoxShadow(
                           color: AppTheme.primaryBlue.withValues(alpha: 0.5),
@@ -103,25 +104,26 @@ class Sidebar extends StatelessWidget {
               ],
             ),
           ),
-          
+
           const Divider(color: AppTheme.darkSurface, height: 1),
-          
+
           // 导航菜单
           Expanded(
             child: Consumer<StorageService>(
               builder: (context, storageService, _) {
                 final totalCount = storageService.allItems.length;
-                
+
                 return ListView(
-                  padding: const EdgeInsets.symmetric(vertical: AppTheme.spacingS),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: AppTheme.spacingS),
                   children: [
-                _SidebarItem(
-                  icon: Icons.home_outlined,
-                  title: '全部项目',
-                  count: totalCount,
-                  isSelected: selectedView == '全部项目',
-                  onTap: () => onViewChanged('全部项目'),
-                ),
+                    _SidebarItem(
+                      icon: Icons.home_outlined,
+                      title: '全部项目',
+                      count: totalCount,
+                      isSelected: selectedView == '全部项目',
+                      onTap: () => onViewChanged('全部项目'),
+                    ),
                     const SizedBox(height: AppTheme.spacingS),
                     _SidebarItem(
                       icon: Icons.vpn_key_outlined,
@@ -135,9 +137,9 @@ class Sidebar extends StatelessWidget {
               },
             ),
           ),
-          
+
           const Divider(color: AppTheme.darkSurface, height: 1),
-          
+
           // 底部操作
           Padding(
             padding: const EdgeInsets.all(16),
@@ -234,78 +236,77 @@ class _SidebarItem extends StatelessWidget {
       ),
       child: RepaintBoundary(
         child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: onTap,
-          borderRadius: BorderRadius.circular(AppTheme.borderRadiusSmall),
-          child: Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: AppTheme.spacingM,
-              vertical: 10,
-            ),
-            child: Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.all(4),
-                  decoration: BoxDecoration(
-                    color: isSelected
-                        ? AppTheme.primaryBlue.withValues(alpha: 0.2)
-                        : Colors.transparent,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Icon(
-                    icon,
-                    color: isSelected
-                        ? AppTheme.primaryBlue
-                        : Colors.grey[400],
-                    size: 20,
-                  ),
-                ),
-                const SizedBox(width: AppTheme.spacingM),
-                Expanded(
-                  child: Text(
-                    title,
-                    style: TextStyle(
-                      color: isSelected
-                          ? AppTheme.primaryBlue
-                          : Colors.grey[300],
-                      fontSize: AppTheme.fontSizeS,
-                      fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                      letterSpacing: -0.2,
-                    ),
-                  ),
-                ),
-                if (count != null && count! > 0)
+          color: Colors.transparent,
+          child: InkWell(
+            onTap: onTap,
+            borderRadius: BorderRadius.circular(AppTheme.borderRadiusSmall),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: AppTheme.spacingM,
+                vertical: 10,
+              ),
+              child: Row(
+                children: [
                   Container(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 6,
-                      vertical: 2,
-                    ),
+                    padding: const EdgeInsets.all(4),
                     decoration: BoxDecoration(
                       color: isSelected
-                          ? AppTheme.primaryBlue
-                          : Colors.grey[600],
-                      borderRadius: BorderRadius.circular(10),
+                          ? AppTheme.primaryBlue.withValues(alpha: 0.2)
+                          : Colors.transparent,
+                      borderRadius: BorderRadius.circular(6),
                     ),
-                    child: Center(
-                      child: Text(
-                        count.toString(),
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 11,
-                          fontWeight: FontWeight.w600,
-                        ),
+                    child: Icon(
+                      icon,
+                      color:
+                          isSelected ? AppTheme.primaryBlue : Colors.grey[400],
+                      size: 20,
+                    ),
+                  ),
+                  const SizedBox(width: AppTheme.spacingM),
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: TextStyle(
+                        color: isSelected
+                            ? AppTheme.primaryBlue
+                            : Colors.grey[300],
+                        fontSize: AppTheme.fontSizeS,
+                        fontWeight:
+                            isSelected ? FontWeight.w600 : FontWeight.normal,
+                        letterSpacing: -0.2,
                       ),
                     ),
                   ),
-              ],
+                  if (count != null && count! > 0)
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 6,
+                        vertical: 2,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isSelected
+                            ? AppTheme.primaryBlue
+                            : Colors.grey[600],
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Center(
+                        child: Text(
+                          count.toString(),
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 11,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
             ),
           ),
-        ),
         ),
       ),
     );
   }
 }
-

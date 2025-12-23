@@ -25,4 +25,3 @@ class SessionService extends ChangeNotifier {
     return _currentMasterPassword != null;
   }
 }
-

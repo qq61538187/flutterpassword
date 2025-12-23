@@ -14,7 +14,7 @@ class PasswordGenerator {
     bool includeSymbols = true,
   }) {
     String chars = '';
-    
+
     if (includeLowercase) chars += _lowercase;
     if (includeUppercase) chars += _uppercase;
     if (includeNumbers) chars += _numbers;
@@ -60,15 +60,58 @@ class PasswordGenerator {
     String separator = '-',
   }) {
     final words = [
-      'apple', 'banana', 'cherry', 'dolphin', 'elephant', 'forest',
-      'garden', 'harbor', 'island', 'jungle', 'kitten', 'lighthouse',
-      'mountain', 'nature', 'ocean', 'planet', 'quasar', 'rainbow',
-      'sunset', 'tiger', 'universe', 'valley', 'waterfall', 'xylophone',
-      'yacht', 'zebra', 'adventure', 'beautiful', 'crystal', 'diamond',
-      'energy', 'fantasy', 'galaxy', 'harmony', 'inspire', 'journey',
-      'kingdom', 'liberty', 'miracle', 'natural', 'oracle', 'paradise',
-      'quantum', 'radiant', 'serenity', 'tranquil', 'ultimate', 'vibrant',
-      'wonder', 'xenial', 'youthful', 'zenith'
+      'apple',
+      'banana',
+      'cherry',
+      'dolphin',
+      'elephant',
+      'forest',
+      'garden',
+      'harbor',
+      'island',
+      'jungle',
+      'kitten',
+      'lighthouse',
+      'mountain',
+      'nature',
+      'ocean',
+      'planet',
+      'quasar',
+      'rainbow',
+      'sunset',
+      'tiger',
+      'universe',
+      'valley',
+      'waterfall',
+      'xylophone',
+      'yacht',
+      'zebra',
+      'adventure',
+      'beautiful',
+      'crystal',
+      'diamond',
+      'energy',
+      'fantasy',
+      'galaxy',
+      'harmony',
+      'inspire',
+      'journey',
+      'kingdom',
+      'liberty',
+      'miracle',
+      'natural',
+      'oracle',
+      'paradise',
+      'quantum',
+      'radiant',
+      'serenity',
+      'tranquil',
+      'ultimate',
+      'vibrant',
+      'wonder',
+      'xenial',
+      'youthful',
+      'zenith'
     ];
 
     final random = Random.secure();
@@ -87,4 +130,3 @@ class PasswordGenerator {
     return selectedWords.join(separator);
   }
 }
-

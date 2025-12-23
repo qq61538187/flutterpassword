@@ -10,13 +10,13 @@ import 'services/category_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   // 初始化 Hive
   await Hive.initFlutter();
-  
+
   // 初始化服务
   await StorageService.init();
-  
+
   runApp(const MyApp());
 }
 

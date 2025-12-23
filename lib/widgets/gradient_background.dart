@@ -20,11 +20,12 @@ class GradientBackground extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         gradient: LinearGradient(
-          colors: colors ?? [
-            AppTheme.darkBackground,
-            AppTheme.darkBackground.withValues(alpha: 0.95),
-            const Color(0xFF1A1A2E),
-          ],
+          colors: colors ??
+              [
+                AppTheme.darkBackground,
+                AppTheme.darkBackground.withValues(alpha: 0.95),
+                const Color(0xFF1A1A2E),
+              ],
           begin: begin,
           end: end,
         ),
@@ -33,4 +34,3 @@ class GradientBackground extends StatelessWidget {
     );
   }
 }
-

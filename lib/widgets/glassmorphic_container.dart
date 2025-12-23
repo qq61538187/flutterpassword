@@ -51,7 +51,8 @@ class GlassmorphicContainer extends StatelessWidget {
             child: Container(
               decoration: BoxDecoration(
                 color: Colors.white.withValues(alpha: opacity),
-                borderRadius: BorderRadius.circular(AppTheme.borderRadiusMedium),
+                borderRadius:
+                    BorderRadius.circular(AppTheme.borderRadiusMedium),
               ),
               child: child,
             ),
@@ -61,4 +62,3 @@ class GlassmorphicContainer extends StatelessWidget {
     );
   }
 }
-

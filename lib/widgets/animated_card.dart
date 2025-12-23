@@ -79,7 +79,8 @@ class _AnimatedCardState extends State<AnimatedCard>
           decoration: BoxDecoration(
             color: widget.backgroundColor ?? AppTheme.lightSurface,
             borderRadius: BorderRadius.circular(AppTheme.borderRadiusMedium),
-            boxShadow: widget.elevated ? AppTheme.elevatedShadow : AppTheme.cardShadow,
+            boxShadow:
+                widget.elevated ? AppTheme.elevatedShadow : AppTheme.cardShadow,
             border: Border.all(
               color: AppTheme.borderColor,
               width: 1,
@@ -91,4 +92,3 @@ class _AnimatedCardState extends State<AnimatedCard>
     );
   }
 }
-

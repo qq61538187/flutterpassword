@@ -34,4 +34,3 @@ class GlowIcon extends StatelessWidget {
     );
   }
 }
-

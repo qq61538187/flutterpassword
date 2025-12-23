@@ -7,14 +7,14 @@ class PasswordAnalyzer {
     List<PasswordItem> items,
   ) {
     final passwordMap = <String, List<PasswordItem>>{};
-    
+
     for (var item in items) {
       if (!passwordMap.containsKey(item.password)) {
         passwordMap[item.password] = [];
       }
       passwordMap[item.password]!.add(item);
     }
-    
+
     // 只返回重复的密码
     passwordMap.removeWhere((key, value) => value.length <= 1);
     return passwordMap;
@@ -33,7 +33,7 @@ class PasswordAnalyzer {
     List<PasswordItem> items,
   ) {
     final usernameMap = <String, List<PasswordItem>>{};
-    
+
     for (var item in items) {
       final key = '${item.username}_${item.website ?? ""}';
       if (!usernameMap.containsKey(key)) {
@@ -41,7 +41,7 @@ class PasswordAnalyzer {
       }
       usernameMap[key]!.add(item);
     }
-    
+
     // 只返回重复的用户名
     usernameMap.removeWhere((key, value) => value.length <= 1);
     return usernameMap;
@@ -52,24 +52,24 @@ class PasswordAnalyzer {
     final weakPasswords = findWeakPasswords(items);
     final duplicatePasswords = findDuplicatePasswords(items);
     final duplicateUsernames = findDuplicateUsernames(items);
-    
+
     final categories = <String, int>{};
     for (var item in items) {
       categories[item.category] = (categories[item.category] ?? 0) + 1;
     }
-    
+
     final strengthCount = <PasswordStrength, int>{
       PasswordStrength.weak: 0,
       PasswordStrength.fair: 0,
       PasswordStrength.good: 0,
       PasswordStrength.strong: 0,
     };
-    
+
     for (var item in items) {
       final strength = PasswordStrengthChecker.checkStrength(item.password);
       strengthCount[strength] = (strengthCount[strength] ?? 0) + 1;
     }
-    
+
     return {
       'total': items.length,
       'weakPasswords': weakPasswords.length,
@@ -77,10 +77,9 @@ class PasswordAnalyzer {
       'duplicateUsernames': duplicateUsernames.length,
       'categories': categories.length,
       'strengthCount': strengthCount,
-      'withWebsite': items.where((item) => 
-        item.website != null && item.website!.isNotEmpty
-      ).length,
+      'withWebsite': items
+          .where((item) => item.website != null && item.website!.isNotEmpty)
+          .length,
     };
   }
 }
-

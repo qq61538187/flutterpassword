@@ -108,4 +108,3 @@ class EnhancedTextField extends StatelessWidget {
     );
   }
 }
-

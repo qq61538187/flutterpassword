@@ -56,4 +56,3 @@ class AppTheme {
   static const Duration animationDuration = Duration(milliseconds: 200);
   static const Duration animationDurationSlow = Duration(milliseconds: 300);
 }
-

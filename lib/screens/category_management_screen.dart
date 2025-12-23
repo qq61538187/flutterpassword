@@ -7,7 +7,8 @@ class CategoryManagementScreen extends StatefulWidget {
   const CategoryManagementScreen({super.key});
 
   @override
-  State<CategoryManagementScreen> createState() => _CategoryManagementScreenState();
+  State<CategoryManagementScreen> createState() =>
+      _CategoryManagementScreenState();
 }
 
 class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
@@ -43,14 +44,16 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
   }
 
   void _showEditCategoryDialog(String category) {
-    final categoryService = Provider.of<CategoryService>(context, listen: false);
+    final categoryService =
+        Provider.of<CategoryService>(context, listen: false);
     final isDefault = CategoryService.isDefaultCategory(category);
     _categoryController.text = category;
     _selectedColor = categoryService.getCategoryColor(category);
     _showCategoryDialog('编辑类别', category, isDefault: isDefault);
   }
 
-  void _showCategoryDialog(String title, String? category, {bool isDefault = false}) {
+  void _showCategoryDialog(String title, String? category,
+      {bool isDefault = false}) {
     showDialog(
       context: context,
       builder: (context) => StatefulBuilder(
@@ -111,7 +114,9 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
                             color: color,
                             shape: BoxShape.circle,
                             border: Border.all(
-                              color: isSelected ? Colors.black : Colors.transparent,
+                              color: isSelected
+                                  ? Colors.black
+                                  : Colors.transparent,
                               width: isSelected ? 3 : 0,
                             ),
                             boxShadow: isSelected
@@ -156,7 +161,8 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
 
   void _saveCategory(String? oldCategory) async {
     if (!mounted) return;
-    final categoryService = Provider.of<CategoryService>(context, listen: false);
+    final categoryService =
+        Provider.of<CategoryService>(context, listen: false);
     final categoryName = _categoryController.text.trim();
 
     if (categoryName.isEmpty) {
@@ -233,7 +239,8 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
 
     if (confirmed != true || !mounted) return;
 
-    final categoryService = Provider.of<CategoryService>(context, listen: false);
+    final categoryService =
+        Provider.of<CategoryService>(context, listen: false);
     try {
       await categoryService.deleteCategory(category);
       if (!mounted) return;
@@ -304,10 +311,12 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
                               Color(0xFF0051D5),
                             ],
                           ),
-                          borderRadius: BorderRadius.circular(AppTheme.borderRadiusMedium),
+                          borderRadius: BorderRadius.circular(
+                              AppTheme.borderRadiusMedium),
                           boxShadow: [
                             BoxShadow(
-                              color: AppTheme.primaryBlue.withValues(alpha: 0.3),
+                              color:
+                                  AppTheme.primaryBlue.withValues(alpha: 0.3),
                               blurRadius: 12,
                               offset: const Offset(0, 4),
                             ),
@@ -317,7 +326,8 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
                           color: Colors.transparent,
                           child: InkWell(
                             onTap: _showAddCategoryDialog,
-                            borderRadius: BorderRadius.circular(AppTheme.borderRadiusMedium),
+                            borderRadius: BorderRadius.circular(
+                                AppTheme.borderRadiusMedium),
                             child: const Center(
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
@@ -383,15 +393,19 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
                         itemCount: categories.length,
                         itemBuilder: (context, index) {
                           final category = categories[index];
-                          final isDefault = CategoryService.isDefaultCategory(category);
+                          final isDefault =
+                              CategoryService.isDefaultCategory(category);
 
                           return Container(
-                            margin: const EdgeInsets.only(bottom: AppTheme.spacingS),
+                            margin: const EdgeInsets.only(
+                                bottom: AppTheme.spacingS),
                             decoration: BoxDecoration(
                               color: AppTheme.lightSurface,
-                              borderRadius: BorderRadius.circular(AppTheme.borderRadiusMedium),
+                              borderRadius: BorderRadius.circular(
+                                  AppTheme.borderRadiusMedium),
                               border: Border.all(
-                                color: AppTheme.borderColor.withValues(alpha: 0.5),
+                                color:
+                                    AppTheme.borderColor.withValues(alpha: 0.5),
                                 width: 1,
                               ),
                               boxShadow: [
@@ -405,12 +419,15 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
                             child: Material(
                               color: Colors.transparent,
                               child: InkWell(
-                                borderRadius: BorderRadius.circular(AppTheme.borderRadiusMedium),
+                                borderRadius: BorderRadius.circular(
+                                    AppTheme.borderRadiusMedium),
                                 child: Padding(
-                                  padding: const EdgeInsets.all(AppTheme.spacingM),
+                                  padding:
+                                      const EdgeInsets.all(AppTheme.spacingM),
                                   child: Consumer<CategoryService>(
                                     builder: (context, categoryService, _) {
-                                      final categoryColor = categoryService.getCategoryColor(category);
+                                      final categoryColor = categoryService
+                                          .getCategoryColor(category);
                                       return Row(
                                         children: [
                                           // 颜色指示器
@@ -419,9 +436,11 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
                                             height: 40,
                                             decoration: BoxDecoration(
                                               color: categoryColor,
-                                              borderRadius: BorderRadius.circular(8),
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
                                               border: Border.all(
-                                                color: AppTheme.borderColor.withValues(alpha: 0.3),
+                                                color: AppTheme.borderColor
+                                                    .withValues(alpha: 0.3),
                                                 width: 1,
                                               ),
                                             ),
@@ -431,38 +450,55 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
                                               color: Colors.white,
                                             ),
                                           ),
-                                          const SizedBox(width: AppTheme.spacingM),
+                                          const SizedBox(
+                                              width: AppTheme.spacingM),
                                           Expanded(
                                             child: Column(
-                                              crossAxisAlignment: CrossAxisAlignment.start,
+                                              crossAxisAlignment:
+                                                  CrossAxisAlignment.start,
                                               children: [
                                                 Row(
                                                   children: [
                                                     Text(
                                                       category,
                                                       style: const TextStyle(
-                                                        fontSize: AppTheme.fontSizeM,
-                                                        fontWeight: FontWeight.w600,
-                                                        color: AppTheme.textPrimary,
+                                                        fontSize:
+                                                            AppTheme.fontSizeM,
+                                                        fontWeight:
+                                                            FontWeight.w600,
+                                                        color: AppTheme
+                                                            .textPrimary,
                                                       ),
                                                     ),
                                                     if (isDefault) ...[
-                                                      const SizedBox(width: AppTheme.spacingS),
+                                                      const SizedBox(
+                                                          width: AppTheme
+                                                              .spacingS),
                                                       Container(
-                                                        padding: const EdgeInsets.symmetric(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                .symmetric(
                                                           horizontal: 6,
                                                           vertical: 2,
                                                         ),
-                                                        decoration: BoxDecoration(
-                                                          color: AppTheme.primaryBlue.withValues(alpha: 0.1),
-                                                          borderRadius: BorderRadius.circular(4),
+                                                        decoration:
+                                                            BoxDecoration(
+                                                          color: AppTheme
+                                                              .primaryBlue
+                                                              .withValues(
+                                                                  alpha: 0.1),
+                                                          borderRadius:
+                                                              BorderRadius
+                                                                  .circular(4),
                                                         ),
                                                         child: const Text(
                                                           '默认',
                                                           style: TextStyle(
                                                             fontSize: 10,
-                                                            color: AppTheme.primaryBlue,
-                                                            fontWeight: FontWeight.w500,
+                                                            color: AppTheme
+                                                                .primaryBlue,
+                                                            fontWeight:
+                                                                FontWeight.w500,
                                                           ),
                                                         ),
                                                       ),
@@ -475,16 +511,21 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
                                           // 编辑和删除按钮 - 默认分类不显示
                                           if (!isDefault) ...[
                                             IconButton(
-                                              icon: const Icon(Icons.edit, size: 20),
+                                              icon: const Icon(Icons.edit,
+                                                  size: 20),
                                               color: AppTheme.textSecondary,
                                               tooltip: '编辑',
-                                              onPressed: () => _showEditCategoryDialog(category),
+                                              onPressed: () =>
+                                                  _showEditCategoryDialog(
+                                                      category),
                                             ),
                                             IconButton(
-                                              icon: const Icon(Icons.delete, size: 20),
+                                              icon: const Icon(Icons.delete,
+                                                  size: 20),
                                               color: Colors.red,
                                               tooltip: '删除',
-                                              onPressed: () => _deleteCategory(category),
+                                              onPressed: () =>
+                                                  _deleteCategory(category),
                                             ),
                                           ],
                                         ],
@@ -505,4 +546,3 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
     );
   }
 }
-

@@ -37,7 +37,7 @@ class _LoadingIndicatorState extends State<LoadingIndicator>
   @override
   Widget build(BuildContext context) {
     final color = widget.color ?? AppTheme.primaryBlue;
-    
+
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) {
@@ -70,4 +70,3 @@ class _LoadingIndicatorState extends State<LoadingIndicator>
     );
   }
 }
-

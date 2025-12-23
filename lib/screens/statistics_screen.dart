@@ -17,7 +17,7 @@ class StatisticsScreen extends StatelessWidget {
         builder: (context, storageService, _) {
           final items = storageService.allItems;
           final stats = PasswordAnalyzer.getStatistics(items);
-          
+
           return SingleChildScrollView(
             padding: const EdgeInsets.all(24),
             child: Column(
@@ -55,7 +55,8 @@ class StatisticsScreen extends StatelessWidget {
                   children: [
                     _StrengthBar(
                       label: '强',
-                      count: stats['strengthCount'][PasswordStrength.strong] ?? 0,
+                      count:
+                          stats['strengthCount'][PasswordStrength.strong] ?? 0,
                       total: stats['total'] as int,
                       color: Colors.green,
                     ),
@@ -132,7 +133,7 @@ class StatisticsScreen extends StatelessWidget {
     final weakPasswords = PasswordAnalyzer.findWeakPasswords(
       storageService.allItems,
     );
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -162,11 +163,12 @@ class StatisticsScreen extends StatelessWidget {
     );
   }
 
-  void _showDuplicatePasswords(BuildContext context, StorageService storageService) {
+  void _showDuplicatePasswords(
+      BuildContext context, StorageService storageService) {
     final duplicates = PasswordAnalyzer.findDuplicatePasswords(
       storageService.allItems,
     );
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -180,13 +182,14 @@ class StatisticsScreen extends StatelessWidget {
               final entry = duplicates.entries.elementAt(index);
               return ExpansionTile(
                 title: Text('${entry.value.length} 个密码项使用相同密码'),
-                subtitle: Text('密码: ${entry.key.substring(0, entry.key.length > 10 ? 10 : entry.key.length)}...'),
-                children: entry.value.map((item) => 
-                  ListTile(
-                    title: Text(item.title),
-                    subtitle: Text(item.username),
-                  )
-                ).toList(),
+                subtitle: Text(
+                    '密码: ${entry.key.substring(0, entry.key.length > 10 ? 10 : entry.key.length)}...'),
+                children: entry.value
+                    .map((item) => ListTile(
+                          title: Text(item.title),
+                          subtitle: Text(item.username),
+                        ))
+                    .toList(),
               );
             },
           ),
@@ -201,11 +204,12 @@ class StatisticsScreen extends StatelessWidget {
     );
   }
 
-  void _showDuplicateUsernames(BuildContext context, StorageService storageService) {
+  void _showDuplicateUsernames(
+      BuildContext context, StorageService storageService) {
     final duplicates = PasswordAnalyzer.findDuplicateUsernames(
       storageService.allItems,
     );
-    
+
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
@@ -220,12 +224,12 @@ class StatisticsScreen extends StatelessWidget {
               return ExpansionTile(
                 title: Text('${entry.value.length} 个密码项使用相同用户名'),
                 subtitle: Text('用户名: ${entry.value.first.username}'),
-                children: entry.value.map((item) => 
-                  ListTile(
-                    title: Text(item.title),
-                    subtitle: Text(item.website ?? '无网站'),
-                  )
-                ).toList(),
+                children: entry.value
+                    .map((item) => ListTile(
+                          title: Text(item.title),
+                          subtitle: Text(item.website ?? '无网站'),
+                        ))
+                    .toList(),
               );
             },
           ),
@@ -333,7 +337,7 @@ class _StrengthBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final percentage = total > 0 ? count / total : 0.0;
-    
+
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8),
       child: Column(
@@ -420,4 +424,3 @@ class _WarningItem extends StatelessWidget {
     );
   }
 }
-

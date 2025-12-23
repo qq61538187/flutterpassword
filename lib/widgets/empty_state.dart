@@ -61,7 +61,8 @@ class EmptyState extends StatelessWidget {
           if (subtitle != null) ...[
             const SizedBox(height: AppTheme.spacingS),
             Padding(
-              padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingXL),
+              padding:
+                  const EdgeInsets.symmetric(horizontal: AppTheme.spacingXL),
               child: Text(
                 subtitle!,
                 style: const TextStyle(
@@ -82,4 +83,3 @@ class EmptyState extends StatelessWidget {
     );
   }
 }
-

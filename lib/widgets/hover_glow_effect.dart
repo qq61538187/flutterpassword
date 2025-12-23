@@ -81,4 +81,3 @@ class _HoverGlowEffectState extends State<HoverGlowEffect>
     );
   }
 }
-

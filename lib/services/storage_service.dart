@@ -49,7 +49,7 @@ class StorageService extends ChangeNotifier {
     // 异步执行解密操作
     final List<PasswordItem> loadedItems = [];
     final encryptedData = _box.values.toList();
-    
+
     // 直接执行解密
     for (var data in encryptedData) {
       try {
@@ -63,10 +63,10 @@ class StorageService extends ChangeNotifier {
         // 如果解密失败，跳过这个项目
       }
     }
-    
+
     // 排序
     loadedItems.sort((a, b) => b.updatedAt.compareTo(a.updatedAt));
-    
+
     // 在主线程更新状态
     _items.clear();
     _items.addAll(loadedItems);
@@ -76,7 +76,7 @@ class StorageService extends ChangeNotifier {
   Future<void> saveItem(PasswordItem item, String masterPassword) async {
     final json = item.toJson();
     final encrypted = _encryption.encrypt(json, masterPassword);
-    
+
     await _box.put(item.id, {
       'encrypted': encrypted,
       'id': item.id,
@@ -126,9 +126,7 @@ class StorageService extends ChangeNotifier {
   }
 
   List<PasswordItem> getRecentItems({int limit = 5}) {
-    final recent = _items
-        .where((item) => item.lastAccessed != null)
-        .toList()
+    final recent = _items.where((item) => item.lastAccessed != null).toList()
       ..sort((a, b) => (b.lastAccessed ?? DateTime(0))
           .compareTo(a.lastAccessed ?? DateTime(0)));
     return recent.take(limit).toList();
@@ -150,7 +148,7 @@ class StorageService extends ChangeNotifier {
     // 1. 使用旧密码解密所有项
     final decryptedItems = <PasswordItem>[];
     final encryptedData = _box.values.toList();
-    
+
     for (var data in encryptedData) {
       try {
         final encryptedString = data['encrypted'] as String;
@@ -168,7 +166,7 @@ class StorageService extends ChangeNotifier {
     for (var item in decryptedItems) {
       final json = item.toJson();
       final encrypted = _encryption.encrypt(json, newPassword);
-      
+
       await _box.put(item.id, {
         'encrypted': encrypted,
         'id': item.id,
@@ -179,4 +177,3 @@ class StorageService extends ChangeNotifier {
     await loadItems(newPassword);
   }
 }
-

@@ -47,7 +47,7 @@ class _AnimatedGlowButtonState extends State<AnimatedGlowButton>
   @override
   Widget build(BuildContext context) {
     final color = widget.color ?? AppTheme.primaryBlue;
-    
+
     return AnimatedBuilder(
       animation: _glowAnimation,
       builder: (context, child) {
@@ -86,7 +86,8 @@ class _AnimatedGlowButtonState extends State<AnimatedGlowButton>
                         height: 24,
                         child: CircularProgressIndicator(
                           strokeWidth: 2.5,
-                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                          valueColor:
+                              AlwaysStoppedAnimation<Color>(Colors.white),
                         ),
                       )
                     : Row(
@@ -119,4 +120,3 @@ class _AnimatedGlowButtonState extends State<AnimatedGlowButton>
     );
   }
 }
-

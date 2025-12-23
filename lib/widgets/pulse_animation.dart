@@ -43,7 +43,7 @@ class _PulseAnimationState extends State<PulseAnimation>
   @override
   Widget build(BuildContext context) {
     final pulseColor = widget.pulseColor ?? AppTheme.primaryBlue;
-    
+
     return AnimatedBuilder(
       animation: _animation,
       builder: (context, child) {
@@ -63,4 +63,3 @@ class _PulseAnimationState extends State<PulseAnimation>
     );
   }
 }
-

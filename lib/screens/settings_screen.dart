@@ -1095,7 +1095,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           } else {
             // 如果分类已存在，更新颜色（如果不同）
             final currentColor = categoryService.getCategoryColor(categoryName);
-            if (currentColor.value != categoryColorValue) { // ignore: deprecated_member_use
+            if (currentColor.toARGB32() != categoryColorValue) {
               try {
                 await categoryService.setCategoryColor(
                   categoryName,
@@ -1137,8 +1137,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         }
 
         if (failedCount > 0) {
-          parts
-              .add('成功: $importedCount，跳过重复: $skippedCount，失败: $failedCount');
+          parts.add('成功: $importedCount，跳过重复: $skippedCount，失败: $failedCount');
           message = '导入完成！${parts.join('，')}';
         } else if (skippedCount > 0) {
           parts.add('成功: $importedCount，跳过重复: $skippedCount');
@@ -1365,7 +1364,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
         if (!authService.isUnlocked) {
           // 延迟关闭，确保 AuthWrapper 已经切换到 UnlockScreen
           // 保存 context 引用，避免异步使用警告
-          final navigatorContext = context; // ignore: use_build_context_synchronously
+          final navigatorContext =
+              context; // ignore: use_build_context_synchronously
           WidgetsBinding.instance.addPostFrameCallback((_) {
             if (!mounted) return;
             Future.delayed(const Duration(milliseconds: 150), () {

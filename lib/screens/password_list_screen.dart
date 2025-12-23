@@ -55,7 +55,9 @@ class _PasswordListScreenState extends State<PasswordListScreen> {
 
     // 类别筛选
     if (widget.selectedCategory != '全部') {
-      filtered = filtered.where((item) => item.category == widget.selectedCategory).toList();
+      filtered = filtered
+          .where((item) => item.category == widget.selectedCategory)
+          .toList();
     }
 
     return filtered;
@@ -85,7 +87,8 @@ class _PasswordListScreenState extends State<PasswordListScreen> {
             children: [
               Container(
                 decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(AppTheme.borderRadiusSmall),
+                  borderRadius:
+                      BorderRadius.circular(AppTheme.borderRadiusSmall),
                   border: Border.all(
                     color: AppTheme.borderColor.withValues(alpha: 0.5),
                     width: 1,
@@ -118,7 +121,8 @@ class _PasswordListScreenState extends State<PasswordListScreen> {
                     filled: true,
                     fillColor: AppTheme.lightSurface,
                     border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(AppTheme.borderRadiusSmall),
+                      borderRadius:
+                          BorderRadius.circular(AppTheme.borderRadiusSmall),
                       borderSide: BorderSide.none,
                     ),
                     contentPadding: const EdgeInsets.symmetric(
@@ -145,7 +149,8 @@ class _PasswordListScreenState extends State<PasswordListScreen> {
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
                     ),
-                    borderRadius: BorderRadius.circular(AppTheme.borderRadiusSmall),
+                    borderRadius:
+                        BorderRadius.circular(AppTheme.borderRadiusSmall),
                     boxShadow: [
                       BoxShadow(
                         color: AppTheme.primaryBlue.withValues(alpha: 0.3),
@@ -154,33 +159,34 @@ class _PasswordListScreenState extends State<PasswordListScreen> {
                       ),
                     ],
                   ),
-                child: Material(
-                  color: Colors.transparent,
-                  child: InkWell(
-                    onTap: () {
-                      _showAddPasswordDialog();
-                    },
-                    borderRadius: BorderRadius.circular(AppTheme.borderRadiusSmall),
-                    child: Container(
-                      alignment: Alignment.center,
-                      child: const Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.add, size: 18, color: Colors.white),
-                          SizedBox(width: 8),
-                          Text(
-                            '添加新密码',
-                            style: TextStyle(
-                              fontSize: AppTheme.fontSizeS,
-                              fontWeight: FontWeight.w600,
-                              color: Colors.white,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: () {
+                        _showAddPasswordDialog();
+                      },
+                      borderRadius:
+                          BorderRadius.circular(AppTheme.borderRadiusSmall),
+                      child: Container(
+                        alignment: Alignment.center,
+                        child: const Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Icon(Icons.add, size: 18, color: Colors.white),
+                            SizedBox(width: 8),
+                            Text(
+                              '添加新密码',
+                              style: TextStyle(
+                                fontSize: AppTheme.fontSizeS,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
                   ),
-                ),
                 ),
               ),
             ],
@@ -194,7 +200,8 @@ class _PasswordListScreenState extends State<PasswordListScreen> {
               final categories = ['全部', ...categoryService.categories];
               return Container(
                 height: 40,
-                padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingM, vertical: 6),
+                padding: const EdgeInsets.symmetric(
+                    horizontal: AppTheme.spacingM, vertical: 6),
                 decoration: const BoxDecoration(
                   color: AppTheme.lightSurface,
                   border: Border(
@@ -209,7 +216,8 @@ class _PasswordListScreenState extends State<PasswordListScreen> {
                         itemCount: categories.length,
                         itemBuilder: (context, index) {
                           final category = categories[index];
-                          final isSelected = category == widget.selectedCategory;
+                          final isSelected =
+                              category == widget.selectedCategory;
                           return Padding(
                             padding: const EdgeInsets.only(right: 8),
                             child: AnimatedContainer(
@@ -224,22 +232,27 @@ class _PasswordListScreenState extends State<PasswordListScreen> {
                                     ? LinearGradient(
                                         colors: [
                                           AppTheme.primaryBlue,
-                                          AppTheme.primaryBlue.withValues(alpha: 0.8),
+                                          AppTheme.primaryBlue
+                                              .withValues(alpha: 0.8),
                                         ],
                                       )
                                     : null,
-                                color: isSelected ? null : AppTheme.lightBackground,
+                                color: isSelected
+                                    ? null
+                                    : AppTheme.lightBackground,
                                 borderRadius: BorderRadius.circular(8),
                                 border: isSelected
                                     ? null
                                     : Border.all(
-                                        color: AppTheme.borderColor.withValues(alpha: 0.5),
+                                        color: AppTheme.borderColor
+                                            .withValues(alpha: 0.5),
                                         width: 1,
                                       ),
                                 boxShadow: isSelected
                                     ? [
                                         BoxShadow(
-                                          color: AppTheme.primaryBlue.withValues(alpha: 0.2),
+                                          color: AppTheme.primaryBlue
+                                              .withValues(alpha: 0.2),
                                           blurRadius: 6,
                                           offset: const Offset(0, 2),
                                         ),
@@ -249,7 +262,8 @@ class _PasswordListScreenState extends State<PasswordListScreen> {
                               child: Material(
                                 color: Colors.transparent,
                                 child: InkWell(
-                                  onTap: () => widget.onCategoryChanged(category),
+                                  onTap: () =>
+                                      widget.onCategoryChanged(category),
                                   borderRadius: BorderRadius.circular(8),
                                   child: Container(
                                     alignment: Alignment.center,
@@ -258,8 +272,12 @@ class _PasswordListScreenState extends State<PasswordListScreen> {
                                       textAlign: TextAlign.center,
                                       style: TextStyle(
                                         fontSize: 12,
-                                        color: isSelected ? Colors.white : AppTheme.textPrimary,
-                                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
+                                        color: isSelected
+                                            ? Colors.white
+                                            : AppTheme.textPrimary,
+                                        fontWeight: isSelected
+                                            ? FontWeight.w600
+                                            : FontWeight.w500,
                                         letterSpacing: 0.2,
                                         height: 1.0,
                                       ),
@@ -293,7 +311,8 @@ class _PasswordListScreenState extends State<PasswordListScreen> {
                               color: AppTheme.lightBackground,
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(
-                                color: AppTheme.borderColor.withValues(alpha: 0.5),
+                                color:
+                                    AppTheme.borderColor.withValues(alpha: 0.5),
                                 width: 1,
                               ),
                             ),
@@ -322,7 +341,7 @@ class _PasswordListScreenState extends State<PasswordListScreen> {
                 String emptyMessage;
                 IconData emptyIcon;
                 String? emptySubtitle;
-                
+
                 if (_searchController.text.isNotEmpty) {
                   emptyMessage = '没有找到匹配的密码';
                   emptyIcon = Icons.search_off;
@@ -336,7 +355,7 @@ class _PasswordListScreenState extends State<PasswordListScreen> {
                   emptyIcon = Icons.lock_outline;
                   emptySubtitle = '点击上方按钮添加第一个密码';
                 }
-                
+
                 return EmptyState(
                   icon: emptyIcon,
                   title: emptyMessage,
@@ -386,7 +405,7 @@ class _PasswordListScreenState extends State<PasswordListScreen> {
 
   Future<void> _deletePassword(PasswordItem item) async {
     if (!mounted) return;
-    
+
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -409,9 +428,10 @@ class _PasswordListScreenState extends State<PasswordListScreen> {
     );
 
     if (!mounted) return;
-    
+
     if (confirmed == true) {
-      final storageService = Provider.of<StorageService>(context, listen: false);
+      final storageService =
+          Provider.of<StorageService>(context, listen: false);
       await storageService.deleteItem(item.id);
       if (widget.selectedPasswordId == item.id) {
         widget.onPasswordSelected('');
@@ -515,15 +535,18 @@ class _PasswordListItem extends StatelessWidget {
                       gradient: LinearGradient(
                         colors: [
                           _getColorFromString(item.title),
-                          _getColorFromString(item.title).withValues(alpha: 0.8),
+                          _getColorFromString(item.title)
+                              .withValues(alpha: 0.8),
                         ],
                         begin: Alignment.topLeft,
                         end: Alignment.bottomRight,
                       ),
-                      borderRadius: BorderRadius.circular(AppTheme.borderRadiusSmall),
+                      borderRadius:
+                          BorderRadius.circular(AppTheme.borderRadiusSmall),
                       boxShadow: [
                         BoxShadow(
-                          color: _getColorFromString(item.title).withValues(alpha: 0.2),
+                          color: _getColorFromString(item.title)
+                              .withValues(alpha: 0.2),
                           blurRadius: 4,
                           offset: const Offset(0, 2),
                         ),
@@ -531,7 +554,9 @@ class _PasswordListItem extends StatelessWidget {
                     ),
                     child: Center(
                       child: Text(
-                        item.title.isNotEmpty ? item.title[0].toUpperCase() : '?',
+                        item.title.isNotEmpty
+                            ? item.title[0].toUpperCase()
+                            : '?',
                         style: const TextStyle(
                           color: Colors.white,
                           fontWeight: FontWeight.bold,
@@ -542,7 +567,7 @@ class _PasswordListItem extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: AppTheme.spacingM),
-                
+
                 // 信息
                 Expanded(
                   child: Column(
@@ -572,7 +597,7 @@ class _PasswordListItem extends StatelessWidget {
                     ],
                   ),
                 ),
-                
+
                 // 操作菜单
                 PopupMenuButton(
                   icon: const Icon(
@@ -618,4 +643,3 @@ class _PasswordListItem extends StatelessWidget {
     );
   }
 }
-

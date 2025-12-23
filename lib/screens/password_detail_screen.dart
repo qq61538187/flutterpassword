@@ -39,220 +39,227 @@ class PasswordDetailScreen extends StatelessWidget {
                 ],
               ),
             ),
-          child: Column(
-            children: [
-              // 顶部工具栏 with glassmorphism
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: AppTheme.spacingL,
-                  vertical: AppTheme.spacingM,
-                ),
-                decoration: BoxDecoration(
-                  color: AppTheme.lightSurface,
-                  border: const Border(
-                    bottom: BorderSide(color: AppTheme.borderColor, width: 1),
+            child: Column(
+              children: [
+                // 顶部工具栏 with glassmorphism
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: AppTheme.spacingL,
+                    vertical: AppTheme.spacingM,
                   ),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withValues(alpha: 0.04),
-                      blurRadius: 8,
-                      offset: const Offset(0, 2),
+                  decoration: BoxDecoration(
+                    color: AppTheme.lightSurface,
+                    border: const Border(
+                      bottom: BorderSide(color: AppTheme.borderColor, width: 1),
                     ),
-                  ],
-                ),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: Text(
-                        item.title,
-                        style: const TextStyle(
-                          fontSize: AppTheme.fontSizeXL,
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme.textPrimary,
-                          letterSpacing: -0.5,
-                        ),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.04),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
                       ),
-                    ),
-                    Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        onTap: () {
-                        Navigator.of(context).push(
-                          SlidePageRoute(
-                            page: PasswordEditScreen(
-                              passwordItem: item,
-                            ),
-                          ),
-                        );
-                        },
-                        borderRadius: BorderRadius.circular(20),
-                        child: const Padding(
-                          padding: EdgeInsets.all(8),
-                          child: Icon(
-                            Icons.edit,
-                            color: AppTheme.textTertiary,
-                            size: 22,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Material(
-                      color: Colors.transparent,
-                      child: InkWell(
-                        onTap: () => _deletePassword(context, item),
-                        borderRadius: BorderRadius.circular(20),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8),
-                          child: Icon(
-                            Icons.delete,
-                            color: Colors.red[400],
-                            size: 22,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
-              // 详情内容
-              Expanded(
-                child: SingleChildScrollView(
-                  padding: const EdgeInsets.all(AppTheme.spacingXL),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    ],
+                  ),
+                  child: Row(
                     children: [
-                      // 图标和基本信息
-                      Center(
-                        child: Container(
-                          width: 96,
-                          height: 96,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                _getColorFromString(item.title),
-                                _getColorFromString(item.title).withValues(alpha: 0.8),
-                              ],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            borderRadius: BorderRadius.circular(AppTheme.borderRadiusLarge),
-                            boxShadow: [
-                              BoxShadow(
-                                color: _getColorFromString(item.title).withValues(alpha: 0.3),
-                                blurRadius: 12,
-                                offset: const Offset(0, 4),
+                      Expanded(
+                        child: Text(
+                          item.title,
+                          style: const TextStyle(
+                            fontSize: AppTheme.fontSizeXL,
+                            fontWeight: FontWeight.bold,
+                            color: AppTheme.textPrimary,
+                            letterSpacing: -0.5,
+                          ),
+                        ),
+                      ),
+                      Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.of(context).push(
+                              SlidePageRoute(
+                                page: PasswordEditScreen(
+                                  passwordItem: item,
+                                ),
                               ),
-                            ],
-                          ),
-                          child: Center(
-                            child: Text(
-                              item.title.isNotEmpty
-                                  ? item.title[0].toUpperCase()
-                                  : '?',
-                              style: const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 36,
-                              ),
+                            );
+                          },
+                          borderRadius: BorderRadius.circular(20),
+                          child: const Padding(
+                            padding: EdgeInsets.all(8),
+                            child: Icon(
+                              Icons.edit,
+                              color: AppTheme.textTertiary,
+                              size: 22,
                             ),
                           ),
                         ),
                       ),
-                      const SizedBox(height: AppTheme.spacingXL),
-
-                      // 用户名
-                      _DetailField(
-                        label: '用户名',
-                        value: item.username,
-                        icon: Icons.person_outline,
-                        onCopy: () => _copyToClipboard(context, item.username),
-                      ),
-                      const SizedBox(height: 16),
-
-                      // 密码
-                      _DetailField(
-                        label: '密码',
-                        value: item.password,
-                        icon: Icons.lock_outline,
-                        isPassword: true,
-                        onCopy: () => _copyToClipboard(context, item.password),
-                      ),
-                      const SizedBox(height: 16),
-
-                      // 网站
-                      if (item.website != null && item.website!.isNotEmpty) ...[
-                        _DetailField(
-                          label: '网站',
-                          value: item.website!,
-                          icon: Icons.language,
-                          onCopy: () => _copyToClipboard(context, item.website!),
-                          onOpen: () => _openWebsite(context, item.website!),
-                        ),
-                        const SizedBox(height: 16),
-                      ],
-
-                      // 类别
-                      _DetailField(
-                        label: '类别',
-                        value: item.category,
-                        icon: Icons.category_outlined,
-                      ),
-                      const SizedBox(height: 16),
-
-
-                      // 备注
-                      if (item.notes != null && item.notes!.isNotEmpty) ...[
-                        const Text(
-                          '备注',
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                            fontSize: AppTheme.fontSizeS,
-                            fontWeight: FontWeight.w600,
-                            color: AppTheme.textSecondary,
-                            letterSpacing: 0.5,
-                          ),
-                        ),
-                        const SizedBox(height: AppTheme.spacingS),
-                        Container(
-                          width: double.infinity,
-                          padding: const EdgeInsets.all(AppTheme.spacingM),
-                          decoration: BoxDecoration(
-                            color: AppTheme.lightSurface,
-                            borderRadius: BorderRadius.circular(AppTheme.borderRadiusSmall),
-                            border: Border.all(color: AppTheme.borderColor),
-                          ),
-                          child: Text(
-                            item.notes!,
-                            textAlign: TextAlign.left,
-                            style: const TextStyle(
-                              fontSize: AppTheme.fontSizeM,
-                              color: AppTheme.textPrimary,
-                              height: 1.5,
+                      Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: () => _deletePassword(context, item),
+                          borderRadius: BorderRadius.circular(20),
+                          child: Padding(
+                            padding: const EdgeInsets.all(8),
+                            child: Icon(
+                              Icons.delete,
+                              color: Colors.red[400],
+                              size: 22,
                             ),
                           ),
                         ),
-                        const SizedBox(height: AppTheme.spacingM),
-                      ],
-
-                      // 时间信息
-                      const Divider(color: AppTheme.borderColor),
-                      const SizedBox(height: AppTheme.spacingM),
-                      _InfoRow(
-                        label: '创建时间',
-                        value: _formatDateTime(item.createdAt),
-                      ),
-                      const SizedBox(height: 8),
-                      _InfoRow(
-                        label: '更新时间',
-                        value: _formatDateTime(item.updatedAt),
                       ),
                     ],
                   ),
                 ),
-              ),
-            ],
-          ),
+
+                // 详情内容
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(AppTheme.spacingXL),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // 图标和基本信息
+                        Center(
+                          child: Container(
+                            width: 96,
+                            height: 96,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  _getColorFromString(item.title),
+                                  _getColorFromString(item.title)
+                                      .withValues(alpha: 0.8),
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(
+                                  AppTheme.borderRadiusLarge),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: _getColorFromString(item.title)
+                                      .withValues(alpha: 0.3),
+                                  blurRadius: 12,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Center(
+                              child: Text(
+                                item.title.isNotEmpty
+                                    ? item.title[0].toUpperCase()
+                                    : '?',
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 36,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: AppTheme.spacingXL),
+
+                        // 用户名
+                        _DetailField(
+                          label: '用户名',
+                          value: item.username,
+                          icon: Icons.person_outline,
+                          onCopy: () =>
+                              _copyToClipboard(context, item.username),
+                        ),
+                        const SizedBox(height: 16),
+
+                        // 密码
+                        _DetailField(
+                          label: '密码',
+                          value: item.password,
+                          icon: Icons.lock_outline,
+                          isPassword: true,
+                          onCopy: () =>
+                              _copyToClipboard(context, item.password),
+                        ),
+                        const SizedBox(height: 16),
+
+                        // 网站
+                        if (item.website != null &&
+                            item.website!.isNotEmpty) ...[
+                          _DetailField(
+                            label: '网站',
+                            value: item.website!,
+                            icon: Icons.language,
+                            onCopy: () =>
+                                _copyToClipboard(context, item.website!),
+                            onOpen: () => _openWebsite(context, item.website!),
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+
+                        // 类别
+                        _DetailField(
+                          label: '类别',
+                          value: item.category,
+                          icon: Icons.category_outlined,
+                        ),
+                        const SizedBox(height: 16),
+
+                        // 备注
+                        if (item.notes != null && item.notes!.isNotEmpty) ...[
+                          const Text(
+                            '备注',
+                            textAlign: TextAlign.left,
+                            style: TextStyle(
+                              fontSize: AppTheme.fontSizeS,
+                              fontWeight: FontWeight.w600,
+                              color: AppTheme.textSecondary,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
+                          const SizedBox(height: AppTheme.spacingS),
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(AppTheme.spacingM),
+                            decoration: BoxDecoration(
+                              color: AppTheme.lightSurface,
+                              borderRadius: BorderRadius.circular(
+                                  AppTheme.borderRadiusSmall),
+                              border: Border.all(color: AppTheme.borderColor),
+                            ),
+                            child: Text(
+                              item.notes!,
+                              textAlign: TextAlign.left,
+                              style: const TextStyle(
+                                fontSize: AppTheme.fontSizeM,
+                                color: AppTheme.textPrimary,
+                                height: 1.5,
+                              ),
+                            ),
+                          ),
+                          const SizedBox(height: AppTheme.spacingM),
+                        ],
+
+                        // 时间信息
+                        const Divider(color: AppTheme.borderColor),
+                        const SizedBox(height: AppTheme.spacingM),
+                        _InfoRow(
+                          label: '创建时间',
+                          value: _formatDateTime(item.createdAt),
+                        ),
+                        const SizedBox(height: 8),
+                        _InfoRow(
+                          label: '更新时间',
+                          value: _formatDateTime(item.updatedAt),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },
@@ -325,7 +332,8 @@ class PasswordDetailScreen extends StatelessWidget {
     );
 
     if (confirmed == true && context.mounted) {
-      final storageService = Provider.of<StorageService>(context, listen: false);
+      final storageService =
+          Provider.of<StorageService>(context, listen: false);
       await storageService.deleteItem(item.id);
       onDeleted();
     }
@@ -414,7 +422,8 @@ class _DetailFieldState extends State<_DetailField> {
                               ? 'monospace'
                               : null,
                           color: AppTheme.textPrimary,
-                          letterSpacing: widget.isPassword && !_obscured ? 1.5 : 0,
+                          letterSpacing:
+                              widget.isPassword && !_obscured ? 1.5 : 0,
                         ),
                       )
                     : Text(
@@ -438,7 +447,9 @@ class _DetailFieldState extends State<_DetailField> {
                     child: Padding(
                       padding: const EdgeInsets.all(6),
                       child: Icon(
-                        _obscured ? Icons.visibility_outlined : Icons.visibility_off_outlined,
+                        _obscured
+                            ? Icons.visibility_outlined
+                            : Icons.visibility_off_outlined,
                         size: 18,
                         color: AppTheme.textTertiary,
                       ),
@@ -522,4 +533,3 @@ class _InfoRow extends StatelessWidget {
     );
   }
 }
-

@@ -76,4 +76,3 @@ class ShinePainter extends CustomPainter {
   @override
   bool shouldRepaint(ShinePainter oldDelegate) => true;
 }
-

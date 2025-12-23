@@ -30,4 +30,3 @@ class SlidePageRoute<T> extends PageRouteBuilder<T> {
           transitionDuration: const Duration(milliseconds: 300),
         );
 }
-

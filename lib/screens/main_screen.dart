@@ -37,15 +37,16 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (!mounted) return;
-    
-    final autoLockService = Provider.of<AutoLockService>(context, listen: false);
+
+    final autoLockService =
+        Provider.of<AutoLockService>(context, listen: false);
     final authService = Provider.of<AuthService>(context, listen: false);
-    
+
     // 只有在已解锁状态下才处理自动锁定
     if (!authService.isUnlocked) {
       return;
     }
-    
+
     switch (state) {
       case AppLifecycleState.paused:
         if (autoLockService.lockOnFocusLossDelay != null) {
@@ -73,7 +74,8 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
   void _initAutoLock() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
-      final autoLockService = Provider.of<AutoLockService>(context, listen: false);
+      final autoLockService =
+          Provider.of<AutoLockService>(context, listen: false);
       final authService = Provider.of<AuthService>(context, listen: false);
       if (authService.isUnlocked) {
         autoLockService.initialize(authService);
@@ -83,7 +85,8 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
 
   // 在用户交互时记录活动
   void _recordUserActivity() {
-    final autoLockService = Provider.of<AutoLockService>(context, listen: false);
+    final autoLockService =
+        Provider.of<AutoLockService>(context, listen: false);
     final authService = Provider.of<AuthService>(context, listen: false);
     if (authService.isUnlocked) {
       autoLockService.recordActivity();
@@ -96,12 +99,13 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
     return Focus(
       onFocusChange: (hasFocus) {
         if (!mounted) return;
-        
-        final autoLockService = Provider.of<AutoLockService>(context, listen: false);
+
+        final autoLockService =
+            Provider.of<AutoLockService>(context, listen: false);
         final authService = Provider.of<AuthService>(context, listen: false);
-        
+
         if (!authService.isUnlocked) return;
-        
+
         if (!hasFocus) {
           // 窗口失去焦点
           if (autoLockService.lockOnFocusLossDelay != null) {
@@ -133,7 +137,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                     });
                   },
                 ),
-                
+
                 // 主内容区域
                 Expanded(
                   child: Row(
@@ -144,7 +148,8 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                         decoration: const BoxDecoration(
                           color: AppTheme.lightSurface,
                           border: Border(
-                            right: BorderSide(color: AppTheme.borderColor, width: 1),
+                            right: BorderSide(
+                                color: AppTheme.borderColor, width: 1),
                           ),
                           boxShadow: [
                             BoxShadow(
@@ -171,7 +176,7 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                           },
                         ),
                       ),
-                      
+
                       // 详情面板
                       Expanded(
                         child: _selectedPasswordId != null
@@ -212,4 +217,3 @@ class EmptyDetailView extends StatelessWidget {
     );
   }
 }
-

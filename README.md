@@ -240,6 +240,38 @@ flutter build windows --release
 
 项目使用 `flutter_lints` 进行代码检查，遵循 Flutter 官方代码规范。
 
+### 提交前检查
+
+项目已配置 **Git 预提交钩子**，在每次 `git commit` 时会自动运行 CI 检查，确保代码质量。
+
+#### 自动检查
+
+当你运行 `git commit` 时，会自动执行：
+
+1. ✅ 代码分析 (`flutter analyze --no-fatal-infos`)
+2. ✅ 运行测试 (`flutter test`)
+3. ✅ 代码格式检查 (`dart format --set-exit-if-changed .`)
+
+如果检查失败，提交会被阻止，你需要修复问题后重新提交。
+
+#### 手动运行检查
+
+你也可以手动运行完整的 CI 检查：
+
+```bash
+./ci-check.sh
+```
+
+#### 跳过检查（不推荐）
+
+只有在紧急情况下才应该跳过检查：
+
+```bash
+git commit --no-verify -m "紧急修复"
+```
+
+更多信息请查看 [预提交钩子说明](.github/PRE_COMMIT_HOOK.md)。
+
 ### 添加新功能
 
 1. 在 `lib/services/` 中添加相应的服务类

@@ -17,15 +17,16 @@ class CsvParser {
   /// 将 PasswordItem 列表转换为 CSV 字符串
   /// CSV 格式：name,url,username,password,note,category,categoryColor
   /// 添加 UTF-8 BOM 以确保 Excel 等软件正确识别中文编码
-  static String toCsv(List<PasswordItem> items, CategoryService categoryService) {
+  static String toCsv(
+      List<PasswordItem> items, CategoryService categoryService) {
     final buffer = StringBuffer();
-    
+
     // 添加 UTF-8 BOM，确保 Excel 等软件正确识别 UTF-8 编码
     buffer.write('\uFEFF');
-    
+
     // 写入表头
     buffer.writeln('name,url,username,password,note,category,categoryColor');
-    
+
     // 写入数据行
     for (var item in items) {
       final name = _escapeCsvField(item.title);
@@ -34,14 +35,16 @@ class CsvParser {
       final password = _escapeCsvField(item.password);
       final note = _escapeCsvField(item.notes ?? '');
       final category = _escapeCsvField(item.category);
-      final categoryColor = categoryService.getCategoryColor(item.category).value.toString(); // ignore: deprecated_member_use - Required for CSV export
-      
-      buffer.writeln('$name,$url,$username,$password,$note,$category,$categoryColor');
+      final categoryColor =
+          categoryService.getCategoryColor(item.category).toARGB32().toString();
+
+      buffer.writeln(
+          '$name,$url,$username,$password,$note,$category,$categoryColor');
     }
-    
+
     return buffer.toString();
   }
-  
+
   /// 转义 CSV 字段（处理引号和逗号）
   static String _escapeCsvField(String field) {
     // 如果字段包含引号、逗号或换行符，需要用引号包裹并转义引号
@@ -68,11 +71,15 @@ class CsvParser {
     // 查找列索引
     final nameIndex = headers.indexWhere((h) => h.toLowerCase() == 'name');
     final urlIndex = headers.indexWhere((h) => h.toLowerCase() == 'url');
-    final usernameIndex = headers.indexWhere((h) => h.toLowerCase() == 'username');
-    final passwordIndex = headers.indexWhere((h) => h.toLowerCase() == 'password');
+    final usernameIndex =
+        headers.indexWhere((h) => h.toLowerCase() == 'username');
+    final passwordIndex =
+        headers.indexWhere((h) => h.toLowerCase() == 'password');
     final noteIndex = headers.indexWhere((h) => h.toLowerCase() == 'note');
-    final categoryIndex = headers.indexWhere((h) => h.toLowerCase() == 'category');
-    final categoryColorIndex = headers.indexWhere((h) => h.toLowerCase() == 'categorycolor');
+    final categoryIndex =
+        headers.indexWhere((h) => h.toLowerCase() == 'category');
+    final categoryColorIndex =
+        headers.indexWhere((h) => h.toLowerCase() == 'categorycolor');
 
     if (nameIndex == -1 || usernameIndex == -1 || passwordIndex == -1) {
       throw const FormatException('CSV 文件缺少必需的列：name, username, password');
@@ -89,8 +96,8 @@ class CsvParser {
 
       try {
         final values = _parseCsvLine(line);
-        if (values.length <= nameIndex || 
-            values.length <= usernameIndex || 
+        if (values.length <= nameIndex ||
+            values.length <= usernameIndex ||
             values.length <= passwordIndex) {
           continue; // 跳过不完整的行
         }
@@ -104,16 +111,16 @@ class CsvParser {
           continue;
         }
 
-        final url = urlIndex >= 0 && urlIndex < values.length 
-            ? values[urlIndex].trim() 
+        final url = urlIndex >= 0 && urlIndex < values.length
+            ? values[urlIndex].trim()
             : '';
-        final note = noteIndex >= 0 && noteIndex < values.length 
-            ? values[noteIndex].trim() 
+        final note = noteIndex >= 0 && noteIndex < values.length
+            ? values[noteIndex].trim()
             : '';
-        final category = categoryIndex >= 0 && categoryIndex < values.length 
-            ? values[categoryIndex].trim() 
+        final category = categoryIndex >= 0 && categoryIndex < values.length
+            ? values[categoryIndex].trim()
             : '登录'; // 如果没有类别，默认为"登录"
-        
+
         // 解析分类颜色
         int? categoryColorValue;
         if (categoryColorIndex >= 0 && categoryColorIndex < values.length) {
@@ -127,7 +134,7 @@ class CsvParser {
             }
           }
         }
-        
+
         // 保存分类颜色信息（如果存在且分类名称不为空）
         if (category.isNotEmpty && categoryColorValue != null) {
           // 如果分类已存在，只更新颜色（保留第一个出现的颜色）
@@ -196,28 +203,27 @@ class CsvParser {
   /// 从 URL 中提取域名
   static String _extractDomainFromUrl(String url) {
     if (url.isEmpty) return '未命名';
-    
+
     try {
       // 移除协议
       String domain = url;
       if (domain.contains('://')) {
         domain = domain.split('://')[1];
       }
-      
+
       // 移除路径
       if (domain.contains('/')) {
         domain = domain.split('/')[0];
       }
-      
+
       // 移除端口
       if (domain.contains(':')) {
         domain = domain.split(':')[0];
       }
-      
+
       return domain.isNotEmpty ? domain : '未命名';
     } catch (e) {
       return '未命名';
     }
   }
 }
-

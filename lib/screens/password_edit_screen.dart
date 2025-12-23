@@ -28,7 +28,7 @@ class _PasswordEditScreenState extends State<PasswordEditScreen> {
   final _passwordController = TextEditingController();
   final _websiteController = TextEditingController();
   final _notesController = TextEditingController();
-  
+
   String _selectedCategory = '登录';
   bool _obscurePassword = true;
   bool _isSaving = false;
@@ -66,12 +66,13 @@ class _PasswordEditScreenState extends State<PasswordEditScreen> {
     });
 
     try {
-      final storageService = Provider.of<StorageService>(context, listen: false);
-      
+      final storageService =
+          Provider.of<StorageService>(context, listen: false);
+
       // 获取主密码（这里简化处理，实际应该从安全的地方获取）
       // 注意：实际应用中应该更安全地处理主密码
       final masterPassword = await _getMasterPassword();
-      
+
       final item = widget.passwordItem?.copyWith(
             title: _titleController.text,
             username: _usernameController.text,
@@ -79,9 +80,7 @@ class _PasswordEditScreenState extends State<PasswordEditScreen> {
             website: _websiteController.text.isEmpty
                 ? null
                 : _websiteController.text,
-            notes: _notesController.text.isEmpty
-                ? null
-                : _notesController.text,
+            notes: _notesController.text.isEmpty ? null : _notesController.text,
             category: _selectedCategory,
           ) ??
           PasswordItem(
@@ -92,14 +91,12 @@ class _PasswordEditScreenState extends State<PasswordEditScreen> {
             website: _websiteController.text.isEmpty
                 ? null
                 : _websiteController.text,
-            notes: _notesController.text.isEmpty
-                ? null
-                : _notesController.text,
+            notes: _notesController.text.isEmpty ? null : _notesController.text,
             category: _selectedCategory,
           );
 
       await storageService.saveItem(item, masterPassword);
-      
+
       if (mounted) {
         Navigator.of(context).pop();
         ScaffoldMessenger.of(context).showSnackBar(
@@ -297,8 +294,8 @@ class _PasswordEditScreenState extends State<PasswordEditScreen> {
                 builder: (context, categoryService, _) {
                   final categories = categoryService.categories;
                   // 确保选中的类别在列表中，否则使用默认值
-                  final initialCategory = categories.contains(_selectedCategory) 
-                      ? _selectedCategory 
+                  final initialCategory = categories.contains(_selectedCategory)
+                      ? _selectedCategory
                       : (categories.isNotEmpty ? categories.first : '登录');
                   if (initialCategory != _selectedCategory) {
                     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -312,7 +309,8 @@ class _PasswordEditScreenState extends State<PasswordEditScreen> {
                   return DropdownButtonFormField<String>(
                     // ignore: deprecated_member_use
                     // value 是受控组件的正确用法，用于保持状态同步
-                    value: _selectedCategory, // ignore: deprecated_member_use
+                    value:
+                        _selectedCategory, // ignore: deprecated_member_use - value 是受控组件的正确用法
                     decoration: const InputDecoration(
                       labelText: '类别',
                       border: OutlineInputBorder(),
@@ -366,7 +364,8 @@ class _PasswordEditScreenState extends State<PasswordEditScreen> {
                             height: 20,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                              valueColor:
+                                  AlwaysStoppedAnimation<Color>(Colors.white),
                             ),
                           ),
                         )
@@ -440,4 +439,3 @@ class _PasswordStrengthIndicator extends StatelessWidget {
     }
   }
 }
-

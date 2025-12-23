@@ -52,7 +52,6 @@ class _UnlockScreenState extends State<UnlockScreen> {
     }
   }
 
-
   Future<void> _handleUnlock() async {
     // 立即更新 UI 状态，让用户看到反馈
     if (mounted) {
@@ -107,7 +106,7 @@ class _UnlockScreenState extends State<UnlockScreen> {
         if (success) {
           // 设置会话密码
           SessionService().setMasterPassword(password);
-          
+
           // 异步加载数据，不阻塞UI
           storageService.loadItems(password).catchError((e) {
             // 如果加载数据失败，重置解锁状态
@@ -141,7 +140,7 @@ class _UnlockScreenState extends State<UnlockScreen> {
         // 验证密码（不改变解锁状态）
         // 在后台线程执行，不阻塞 UI
         final isValid = await authService.verifyPasswordOnly(password);
-        
+
         if (!isValid) {
           if (mounted) {
             setState(() {
@@ -155,7 +154,7 @@ class _UnlockScreenState extends State<UnlockScreen> {
         // 密码验证成功，立即设置会话密码并解锁（不等待数据加载）
         SessionService().setMasterPassword(password);
         authService.unlockDirectly();
-        
+
         // 异步加载数据，不阻塞UI和解锁流程
         // 数据会在后台加载，用户进入主界面时数据可能还在加载中
         storageService.loadItems(password).catchError((e) {
@@ -165,7 +164,7 @@ class _UnlockScreenState extends State<UnlockScreen> {
             debugPrint('加载数据失败: $e');
           }
         });
-        
+
         // 成功后会通过 AuthService 的 notifyListeners 自动跳转到主界面
       }
     } catch (e) {
@@ -194,7 +193,7 @@ class _UnlockScreenState extends State<UnlockScreen> {
 
         // 根据 AuthService 的状态确定是否是首次使用
         final isFirstTime = !authService.hasMasterPassword();
-        
+
         // 如果不是首次使用，确保加载提示
         if (!isFirstTime && _passwordHint == null) {
           _loadPasswordHint();
@@ -231,7 +230,7 @@ class _UnlockScreenState extends State<UnlockScreen> {
                       child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          // Logo with glow effect
+                          // 带发光效果的 Logo
                           RepaintBoundary(
                             child: Container(
                               width: 100,
@@ -360,7 +359,8 @@ class _UnlockScreenState extends State<UnlockScreen> {
                                               IconButton(
                                                 icon: Icon(
                                                   _obscurePassword
-                                                      ? Icons.visibility_outlined
+                                                      ? Icons
+                                                          .visibility_outlined
                                                       : Icons
                                                           .visibility_off_outlined,
                                                   color: Colors.grey,
@@ -373,32 +373,42 @@ class _UnlockScreenState extends State<UnlockScreen> {
                                                 },
                                               ),
                                               // 如果有提示，显示感叹号图标（在眼睛图标后面）
-                                              if (_passwordHint != null && _passwordHint!.isNotEmpty)
+                                              if (_passwordHint != null &&
+                                                  _passwordHint!.isNotEmpty)
                                                 Tooltip(
                                                   message: _passwordHint!,
-                                                  waitDuration: const Duration(milliseconds: 300),
+                                                  waitDuration: const Duration(
+                                                      milliseconds: 300),
                                                   textStyle: const TextStyle(
                                                     color: Colors.white,
-                                                    fontSize: AppTheme.fontSizeS,
+                                                    fontSize:
+                                                        AppTheme.fontSizeS,
                                                   ),
                                                   decoration: BoxDecoration(
-                                                    color: Colors.black.withValues(alpha: 0.85),
-                                                    borderRadius: BorderRadius.circular(
-                                                        AppTheme.borderRadiusSmall),
+                                                    color: Colors.black
+                                                        .withValues(
+                                                            alpha: 0.85),
+                                                    borderRadius: BorderRadius
+                                                        .circular(AppTheme
+                                                            .borderRadiusSmall),
                                                   ),
                                                   child: MouseRegion(
-                                                    cursor: SystemMouseCursors.click,
+                                                    cursor: SystemMouseCursors
+                                                        .click,
                                                     child: IconButton(
                                                       icon: const Icon(
-                                                        Icons.info_outline_rounded,
-                                                        color: AppTheme.primaryBlue,
+                                                        Icons
+                                                            .info_outline_rounded,
+                                                        color: AppTheme
+                                                            .primaryBlue,
                                                         size: 22,
                                                       ),
                                                       onPressed: () {
                                                         // 点击也可以显示提示（可选）
                                                       },
                                                       padding: EdgeInsets.zero,
-                                                      constraints: const BoxConstraints(
+                                                      constraints:
+                                                          const BoxConstraints(
                                                         minWidth: 40,
                                                         minHeight: 40,
                                                       ),
