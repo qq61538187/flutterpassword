@@ -284,6 +284,8 @@ jobs:
             FlutterPassword-*-macos.dmg
           if-no-files-found: error
           retention-days: 30
+          # 注意：GitHub Actions 会自动将 artifact 压缩为 zip
+          # 下载后解压即可得到 DMG 文件
 
       - name: Verify Windows installer
         if: runner.os == 'Windows'
@@ -309,4 +311,21 @@ jobs:
             dist/*.exe
           if-no-files-found: error
           retention-days: 30
+          # 注意：GitHub Actions 会自动将 artifact 压缩为 zip
+          # 下载后解压即可得到 EXE 安装包
+
+      # ===== 可选：创建 GitHub Release 并直接上传 DMG/EXE（不压缩）=====
+      # 如果需要直接提供 DMG/EXE 文件（不压缩），可以取消下面的注释
+      # 注意：需要设置 GITHUB_TOKEN 权限，并且只在推送标签时创建 Release
+      # - name: Create Release
+      #   if: startsWith(github.ref, 'refs/tags/v')
+      #   uses: softprops/action-gh-release@v1
+      #   with:
+      #     files: |
+      #       FlutterPassword-*-macos.dmg
+      #       dist/*.exe
+      #     draft: false
+      #     prerelease: false
+      #   env:
+      #     GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
