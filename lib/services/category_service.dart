@@ -1,4 +1,3 @@
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'dart:convert';
@@ -15,7 +14,7 @@ class CategoryInfo {
   Map<String, dynamic> toJson() {
     return {
       'name': name,
-      'color': color.value,
+      'color': color.value, // ignore: deprecated_member_use - Required for JSON serialization
     };
   }
 
@@ -93,7 +92,7 @@ class CategoryService extends ChangeNotifier {
       
       // 保存颜色
       final colorsMap = _categoryColors.map((key, value) => 
-        MapEntry(key, value.value));
+        MapEntry(key, value.value)); // ignore: deprecated_member_use - Required for JSON serialization
       final colorsJson = json.encode(colorsMap);
       await prefs.setString(_categoryColorsKey, colorsJson);
       

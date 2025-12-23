@@ -158,7 +158,7 @@ class _PasswordEditScreenState extends State<PasswordEditScreen> {
         backgroundColor: AppTheme.lightSurface,
         title: Text(
           widget.passwordItem == null ? '添加密码' : '编辑密码',
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: AppTheme.fontSizeL,
             fontWeight: FontWeight.bold,
             color: AppTheme.textPrimary,
@@ -296,10 +296,23 @@ class _PasswordEditScreenState extends State<PasswordEditScreen> {
               Consumer<CategoryService>(
                 builder: (context, categoryService, _) {
                   final categories = categoryService.categories;
+                  // 确保选中的类别在列表中，否则使用默认值
+                  final initialCategory = categories.contains(_selectedCategory) 
+                      ? _selectedCategory 
+                      : (categories.isNotEmpty ? categories.first : '登录');
+                  if (initialCategory != _selectedCategory) {
+                    WidgetsBinding.instance.addPostFrameCallback((_) {
+                      if (mounted) {
+                        setState(() {
+                          _selectedCategory = initialCategory;
+                        });
+                      }
+                    });
+                  }
                   return DropdownButtonFormField<String>(
-                    value: categories.contains(_selectedCategory) 
-                        ? _selectedCategory 
-                        : (categories.isNotEmpty ? categories.first : '登录'),
+                    // ignore: deprecated_member_use
+                    // value 是受控组件的正确用法，用于保持状态同步
+                    value: _selectedCategory, // ignore: deprecated_member_use
                     decoration: const InputDecoration(
                       labelText: '类别',
                       border: OutlineInputBorder(),

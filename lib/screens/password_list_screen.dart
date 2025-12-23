@@ -70,7 +70,7 @@ class _PasswordListScreenState extends State<PasswordListScreen> {
           padding: const EdgeInsets.all(AppTheme.spacingM),
           decoration: BoxDecoration(
             color: AppTheme.lightSurface,
-            border: Border(
+            border: const Border(
               bottom: BorderSide(color: AppTheme.borderColor, width: 1),
             ),
             boxShadow: [
@@ -100,17 +100,17 @@ class _PasswordListScreenState extends State<PasswordListScreen> {
                 ),
                 child: TextField(
                   controller: _searchController,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: AppTheme.fontSizeM,
                     color: AppTheme.textPrimary,
                   ),
                   decoration: InputDecoration(
                     hintText: '搜索密码...',
-                    hintStyle: TextStyle(
+                    hintStyle: const TextStyle(
                       color: AppTheme.textTertiary,
                       fontSize: AppTheme.fontSizeM,
                     ),
-                    prefixIcon: Icon(
+                    prefixIcon: const Icon(
                       Icons.search,
                       size: 20,
                       color: AppTheme.textTertiary,
@@ -195,7 +195,7 @@ class _PasswordListScreenState extends State<PasswordListScreen> {
               return Container(
                 height: 40,
                 padding: const EdgeInsets.symmetric(horizontal: AppTheme.spacingM, vertical: 6),
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   color: AppTheme.lightSurface,
                   border: Border(
                     bottom: BorderSide(color: AppTheme.borderColor, width: 1),
@@ -297,7 +297,7 @@ class _PasswordListScreenState extends State<PasswordListScreen> {
                                 width: 1,
                               ),
                             ),
-                            child: Icon(
+                            child: const Icon(
                               Icons.settings,
                               size: 16,
                               color: AppTheme.textSecondary,
@@ -550,7 +550,7 @@ class _PasswordListItem extends StatelessWidget {
                     children: [
                       Text(
                         item.title,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: AppTheme.fontSizeM,
                           fontWeight: FontWeight.w600,
                           color: AppTheme.textPrimary,
@@ -562,7 +562,7 @@ class _PasswordListItem extends StatelessWidget {
                       const SizedBox(height: 4),
                       Text(
                         item.username,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: AppTheme.fontSizeS,
                           color: AppTheme.textSecondary,
                         ),
@@ -575,7 +575,7 @@ class _PasswordListItem extends StatelessWidget {
                 
                 // 操作菜单
                 PopupMenuButton(
-                  icon: Icon(
+                  icon: const Icon(
                     Icons.more_vert,
                     size: 18,
                     color: AppTheme.textTertiary,

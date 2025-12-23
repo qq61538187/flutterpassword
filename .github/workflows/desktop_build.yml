@@ -48,6 +48,8 @@ jobs:
           fi
           echo "APP_VERSION=$ver"
           echo "APP_VERSION=$ver" >> "$GITHUB_ENV"
+          # 同时输出到文件，供后续步骤使用
+          echo "$ver" > app_version.txt
 
       - name: Pub get
         run: flutter pub get
@@ -138,16 +140,34 @@ jobs:
         shell: bash
         run: |
           set -euxo pipefail
+          # 读取版本号
+          APP_VERSION="${APP_VERSION:-$(cat app_version.txt)}"
+          if [ -z "$APP_VERSION" ]; then
+            echo "❌ 无法获取应用版本号"
+            exit 1
+          fi
+          echo "📦 使用版本号: $APP_VERSION"
+          
           APP_DIR="build/macos/Build/Products/Release"
           APP_PATH="$(find "$APP_DIR" -maxdepth 1 -name '*.app' -print -quit)"
           if [ -z "$APP_PATH" ]; then
-            echo "未找到 .app 产物，目录如下："
+            echo "❌ 未找到 .app 产物，目录如下："
             ls -lah "$APP_DIR" || true
             exit 1
           fi
+          echo "✅ 找到应用: $APP_PATH"
+          
           DMG_NAME="FlutterPassword-${APP_VERSION}-macos.dmg"
+          echo "📦 创建 DMG: $DMG_NAME"
           hdiutil create -volname "FlutterPassword" -srcfolder "$APP_PATH" -ov -format UDZO "$DMG_NAME"
-          ls -lah "$DMG_NAME"
+          
+          if [ -f "$DMG_NAME" ]; then
+            echo "✅ DMG 创建成功"
+            ls -lh "$DMG_NAME"
+          else
+            echo "❌ DMG 创建失败"
+            exit 1
+          fi
 
       - name: macOS Notarize DMG (optional)
         if: runner.os == 'macOS' && env.APPLE_ID != '' && env.APPLE_TEAM_ID != '' && env.APPLE_APP_SPECIFIC_PASSWORD != ''
@@ -174,36 +194,112 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = "Stop"
+          
+          # 读取版本号
+          if (Test-Path "app_version.txt") {
+            $APP_VERSION = Get-Content "app_version.txt" -Raw | ForEach-Object { $_.Trim() }
+          } else {
+            $APP_VERSION = $env:APP_VERSION
+          }
+          if ([string]::IsNullOrEmpty($APP_VERSION)) {
+            Write-Host "❌ 无法获取应用版本号"
+            exit 1
+          }
+          Write-Host "📦 使用版本号: $APP_VERSION"
+          
           $src = "build\\windows\\x64\\runner\\Release"
-          if (!(Test-Path $src)) { throw "Release folder not found: $src" }
+          if (!(Test-Path $src)) { 
+            Write-Host "❌ Release 文件夹不存在: $src"
+            throw "Release folder not found: $src" 
+          }
+          Write-Host "✅ 找到 Release 文件夹: $src"
+          
           # Inno Setup 对相对路径的解析基于 .iss 所在目录，容易导致找不到文件；
           # 这里强制转成绝对路径传给 ISCC。
           $srcAbs = (Resolve-Path $src).Path
           $exe = Get-ChildItem -Path $srcAbs -Filter *.exe | Select-Object -First 1
-          if ($null -eq $exe) { throw "No exe found in $src" }
+          if ($null -eq $exe) { 
+            Write-Host "❌ 未找到 .exe 文件: $src"
+            throw "No exe found in $src" 
+          }
+          Write-Host "✅ 找到可执行文件: $($exe.Name)"
+          
           $outDir = "$pwd\\dist"
           New-Item -ItemType Directory -Force -Path $outDir | Out-Null
           $outDirAbs = (Resolve-Path $outDir).Path
+          Write-Host "📦 输出目录: $outDirAbs"
+          
           $iscc = "${env:ProgramFiles(x86)}\\Inno Setup 6\\ISCC.exe"
-          if (!(Test-Path $iscc)) { throw "ISCC not found: $iscc" }
+          if (!(Test-Path $iscc)) { 
+            Write-Host "❌ Inno Setup 编译器未找到: $iscc"
+            throw "ISCC not found: $iscc" 
+          }
+          Write-Host "✅ 找到 Inno Setup: $iscc"
+          
+          Write-Host "🔨 开始构建安装包..."
           & $iscc `
-            "/DAppVersion=$env:APP_VERSION" `
+            "/DAppVersion=$APP_VERSION" `
             "/DAppExeName=$($exe.Name)" `
             "/DSourceDir=$srcAbs" `
             "/DOutputDir=$outDirAbs" `
             "packaging\\windows\\FlutterPassword.iss"
-          Get-ChildItem -Path $outDir | Format-List
+          
+          if ($LASTEXITCODE -ne 0) {
+            Write-Host "❌ 安装包构建失败"
+            exit 1
+          }
+          
+          Write-Host "✅ 安装包构建成功"
+          $installer = Get-ChildItem -Path $outDir -Filter *.exe | Select-Object -First 1
+          if ($installer) {
+            Write-Host "📦 安装包: $($installer.FullName)"
+            Write-Host "   大小: $([math]::Round($installer.Length / 1MB, 2)) MB"
+          } else {
+            Write-Host "⚠️  未找到生成的安装包文件"
+            Get-ChildItem -Path $outDir | Format-List
+          }
 
       - name: Upload artifact (macOS)
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          APP_VERSION="${APP_VERSION:-$(cat app_version.txt)}"
+          DMG_NAME="FlutterPassword-${APP_VERSION}-macos.dmg"
+          if [ ! -f "$DMG_NAME" ]; then
+            echo "❌ DMG 文件不存在: $DMG_NAME"
+            ls -lah *.dmg 2>/dev/null || echo "当前目录没有 DMG 文件"
+            exit 1
+          fi
+          echo "✅ 找到 DMG 文件: $DMG_NAME"
+          ls -lh "$DMG_NAME"
+        continue-on-error: false
+      
+      - name: Upload DMG artifact
         if: runner.os == 'macOS'
         uses: actions/upload-artifact@v4
         with:
           name: FlutterPassword-macOS
           path: |
-            FlutterPassword-${{ env.APP_VERSION }}-macos.dmg
+            FlutterPassword-*-macos.dmg
           if-no-files-found: error
+          retention-days: 30
 
-      - name: Upload artifact (Windows)
+      - name: Verify Windows installer
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          $installer = Get-ChildItem -Path "dist" -Filter *.exe -ErrorAction SilentlyContinue | Select-Object -First 1
+          if ($null -eq $installer) {
+            Write-Host "❌ 安装包文件不存在"
+            Write-Host "dist 目录内容:"
+            Get-ChildItem -Path "dist" -ErrorAction SilentlyContinue | Format-List
+            exit 1
+          }
+          Write-Host "✅ 找到安装包: $($installer.FullName)"
+          Write-Host "   大小: $([math]::Round($installer.Length / 1MB, 2)) MB"
+        continue-on-error: false
+      
+      - name: Upload Windows installer artifact
         if: runner.os == 'Windows'
         uses: actions/upload-artifact@v4
         with:
@@ -211,4 +307,5 @@ jobs:
           path: |
             dist/*.exe
           if-no-files-found: error
+          retention-days: 30
 

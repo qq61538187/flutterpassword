@@ -12,7 +12,7 @@ class SlidePageRoute<T> extends PageRouteBuilder<T> {
   }) : super(
           pageBuilder: (context, animation, secondaryAnimation) => page,
           transitionsBuilder: (context, animation, secondaryAnimation, child) {
-            final curve = Curves.easeInOutCubic;
+            const curve = Curves.easeInOutCubic;
             final tween = Tween(begin: beginOffset, end: endOffset);
             final curvedAnimation = CurvedAnimation(
               parent: animation,

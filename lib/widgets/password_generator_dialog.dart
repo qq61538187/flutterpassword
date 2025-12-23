@@ -160,7 +160,7 @@ class _PasswordGeneratorDialogState extends State<PasswordGeneratorDialog> {
                   Expanded(
                     child: SelectableText(
                       _generatedPassword,
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: AppTheme.fontSizeM,
                         fontFamily: 'monospace',
                         color: AppTheme.textPrimary,
@@ -181,7 +181,7 @@ class _PasswordGeneratorDialogState extends State<PasswordGeneratorDialog> {
                           color: AppTheme.primaryBlue.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(20),
                         ),
-                        child: Icon(
+                        child: const Icon(
                           Icons.copy,
                           size: 18,
                           color: AppTheme.primaryBlue,
@@ -322,7 +322,7 @@ class _PasswordGeneratorDialogState extends State<PasswordGeneratorDialog> {
                   children: [
                     Row(
                       children: [
-                        Icon(
+                        const Icon(
                           Icons.tune,
                           size: 18,
                           color: AppTheme.textSecondary,
@@ -330,7 +330,7 @@ class _PasswordGeneratorDialogState extends State<PasswordGeneratorDialog> {
                         const SizedBox(width: AppTheme.spacingS),
                         Text(
                           '长度: $_length',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: AppTheme.fontSizeS,
                             fontWeight: FontWeight.w600,
                             color: AppTheme.textPrimary,
@@ -449,7 +449,7 @@ class _PasswordGeneratorDialogState extends State<PasswordGeneratorDialog> {
                       child: InkWell(
                         onTap: _generatePassword,
                         borderRadius: BorderRadius.circular(AppTheme.borderRadiusMedium),
-                        child: Center(
+                        child: const Center(
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -458,7 +458,7 @@ class _PasswordGeneratorDialogState extends State<PasswordGeneratorDialog> {
                                 size: 18,
                                 color: AppTheme.textPrimary,
                               ),
-                              const SizedBox(width: AppTheme.spacingS),
+                              SizedBox(width: AppTheme.spacingS),
                               Text(
                                 '重新生成',
                                 style: TextStyle(
@@ -502,17 +502,17 @@ class _PasswordGeneratorDialogState extends State<PasswordGeneratorDialog> {
                           Navigator.of(context).pop(_generatedPassword);
                         },
                         borderRadius: BorderRadius.circular(AppTheme.borderRadiusMedium),
-                        child: Center(
+                        child: const Center(
                           child: Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
-                              const Icon(
+                              Icon(
                                 Icons.check,
                                 size: 18,
                                 color: Colors.white,
                               ),
-                              const SizedBox(width: AppTheme.spacingS),
-                              const Text(
+                              SizedBox(width: AppTheme.spacingS),
+                              Text(
                                 '使用此密码',
                                 style: TextStyle(
                                   fontSize: AppTheme.fontSizeM,

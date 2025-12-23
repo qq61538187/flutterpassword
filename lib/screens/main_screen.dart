@@ -141,12 +141,12 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
                       // 密码列表
                       Container(
                         width: 360,
-                        decoration: BoxDecoration(
+                        decoration: const BoxDecoration(
                           color: AppTheme.lightSurface,
                           border: Border(
                             right: BorderSide(color: AppTheme.borderColor, width: 1),
                           ),
-                          boxShadow: const [
+                          boxShadow: [
                             BoxShadow(
                               color: Color(0x08000000),
                               blurRadius: 4,
@@ -204,7 +204,7 @@ class EmptyDetailView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       color: AppTheme.lightBackground,
-      child: EmptyState(
+      child: const EmptyState(
         icon: Icons.lock_outline,
         title: '选择一个密码项查看详情',
         subtitle: '在左侧列表中选择一个密码项以查看详细信息',

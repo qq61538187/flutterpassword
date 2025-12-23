@@ -34,7 +34,7 @@ class CsvParser {
       final password = _escapeCsvField(item.password);
       final note = _escapeCsvField(item.notes ?? '');
       final category = _escapeCsvField(item.category);
-      final categoryColor = categoryService.getCategoryColor(item.category).value.toString();
+      final categoryColor = categoryService.getCategoryColor(item.category).value.toString(); // ignore: deprecated_member_use - Required for CSV export
       
       buffer.writeln('$name,$url,$username,$password,$note,$category,$categoryColor');
     }
@@ -75,7 +75,7 @@ class CsvParser {
     final categoryColorIndex = headers.indexWhere((h) => h.toLowerCase() == 'categorycolor');
 
     if (nameIndex == -1 || usernameIndex == -1 || passwordIndex == -1) {
-      throw FormatException('CSV 文件缺少必需的列：name, username, password');
+      throw const FormatException('CSV 文件缺少必需的列：name, username, password');
     }
 
     final items = <PasswordItem>[];

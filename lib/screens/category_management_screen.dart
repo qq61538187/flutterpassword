@@ -74,8 +74,8 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
                     onSubmitted: (_) => _saveCategory(category),
                   ),
                   if (isDefault)
-                    Padding(
-                      padding: const EdgeInsets.only(top: 8.0),
+                    const Padding(
+                      padding: EdgeInsets.only(top: 8.0),
                       child: Text(
                         '默认分类只能修改颜色，不能修改名称',
                         style: TextStyle(
@@ -97,7 +97,7 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
                     spacing: 8,
                     runSpacing: 8,
                     children: _presetColors.map((color) {
-                      final isSelected = color.value == _selectedColor.value;
+                      final isSelected = color == _selectedColor;
                       return GestureDetector(
                         onTap: () {
                           setDialogState(() {
@@ -155,10 +155,12 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
   }
 
   void _saveCategory(String? oldCategory) async {
+    if (!mounted) return;
     final categoryService = Provider.of<CategoryService>(context, listen: false);
     final categoryName = _categoryController.text.trim();
 
     if (categoryName.isEmpty) {
+      if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text('类别名称不能为空'),
@@ -171,46 +173,43 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
     try {
       if (oldCategory == null) {
         await categoryService.addCategory(categoryName, color: _selectedColor);
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('类别添加成功'),
-              duration: Duration(seconds: 2),
-            ),
-          );
-        }
+        if (!mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('类别添加成功'),
+            duration: Duration(seconds: 2),
+          ),
+        );
       } else {
         await categoryService.updateCategory(
           oldCategory,
           categoryName,
           color: _selectedColor,
         );
-        if (context.mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('类别更新成功'),
-              duration: Duration(seconds: 2),
-            ),
-          );
-        }
-      }
-
-      if (context.mounted) {
-        Navigator.pop(context);
-      }
-    } catch (e) {
-      if (context.mounted) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString().replaceFirst('Exception: ', '')),
-            backgroundColor: Colors.red,
+          const SnackBar(
+            content: Text('类别更新成功'),
+            duration: Duration(seconds: 2),
           ),
         );
       }
+
+      if (!mounted) return;
+      Navigator.pop(context);
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString().replaceFirst('Exception: ', '')),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
   void _deleteCategory(String category) async {
+    if (!mounted) return;
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
@@ -232,28 +231,26 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
       ),
     );
 
-    if (confirmed != true) return;
+    if (confirmed != true || !mounted) return;
 
     final categoryService = Provider.of<CategoryService>(context, listen: false);
     try {
       await categoryService.deleteCategory(category);
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('类别删除成功'),
-            duration: Duration(seconds: 2),
-          ),
-        );
-      }
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('类别删除成功'),
+          duration: Duration(seconds: 2),
+        ),
+      );
     } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text(e.toString().replaceFirst('Exception: ', '')),
-            backgroundColor: Colors.red,
-          ),
-        );
-      }
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString().replaceFirst('Exception: ', '')),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -321,10 +318,10 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
                           child: InkWell(
                             onTap: _showAddCategoryDialog,
                             borderRadius: BorderRadius.circular(AppTheme.borderRadiusMedium),
-                            child: Center(
+                            child: const Center(
                               child: Row(
                                 mainAxisAlignment: MainAxisAlignment.center,
-                                children: const [
+                                children: [
                                   Icon(
                                     Icons.add,
                                     size: 20,
@@ -353,7 +350,7 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
               // 类别列表
               Expanded(
                 child: categories.isEmpty
-                    ? Center(
+                    ? const Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
@@ -362,7 +359,7 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
                               size: 64,
                               color: AppTheme.textSecondary,
                             ),
-                            const SizedBox(height: AppTheme.spacingM),
+                            SizedBox(height: AppTheme.spacingM),
                             Text(
                               '暂无类别',
                               style: TextStyle(
@@ -370,7 +367,7 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
                                 color: AppTheme.textSecondary,
                               ),
                             ),
-                            const SizedBox(height: AppTheme.spacingS),
+                            SizedBox(height: AppTheme.spacingS),
                             Text(
                               '点击上方按钮添加类别',
                               style: TextStyle(
@@ -443,7 +440,7 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
                                                   children: [
                                                     Text(
                                                       category,
-                                                      style: TextStyle(
+                                                      style: const TextStyle(
                                                         fontSize: AppTheme.fontSizeM,
                                                         fontWeight: FontWeight.w600,
                                                         color: AppTheme.textPrimary,
@@ -460,7 +457,7 @@ class _CategoryManagementScreenState extends State<CategoryManagementScreen> {
                                                           color: AppTheme.primaryBlue.withValues(alpha: 0.1),
                                                           borderRadius: BorderRadius.circular(4),
                                                         ),
-                                                        child: Text(
+                                                        child: const Text(
                                                           '默认',
                                                           style: TextStyle(
                                                             fontSize: 10,

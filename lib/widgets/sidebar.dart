@@ -104,7 +104,7 @@ class Sidebar extends StatelessWidget {
             ),
           ),
           
-          Divider(color: AppTheme.darkSurface, height: 1),
+          const Divider(color: AppTheme.darkSurface, height: 1),
           
           // 导航菜单
           Expanded(
@@ -136,7 +136,7 @@ class Sidebar extends StatelessWidget {
             ),
           ),
           
-          Divider(color: AppTheme.darkSurface, height: 1),
+          const Divider(color: AppTheme.darkSurface, height: 1),
           
           // 底部操作
           Padding(

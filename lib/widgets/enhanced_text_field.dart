@@ -52,18 +52,18 @@ class EnhancedTextField extends StatelessWidget {
         onTap: onTap,
         maxLines: maxLines,
         enabled: enabled,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: AppTheme.fontSizeM,
           color: AppTheme.textPrimary,
         ),
         decoration: InputDecoration(
           labelText: labelText,
           hintText: hintText,
-          hintStyle: TextStyle(
+          hintStyle: const TextStyle(
             color: AppTheme.textTertiary,
             fontSize: AppTheme.fontSizeM,
           ),
-          labelStyle: TextStyle(
+          labelStyle: const TextStyle(
             color: AppTheme.textSecondary,
             fontSize: AppTheme.fontSizeS,
           ),
@@ -80,21 +80,21 @@ class EnhancedTextField extends StatelessWidget {
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppTheme.borderRadiusMedium),
-            borderSide: BorderSide(
+            borderSide: const BorderSide(
               color: AppTheme.primaryBlue,
               width: 2,
             ),
           ),
           errorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppTheme.borderRadiusMedium),
-            borderSide: BorderSide(
+            borderSide: const BorderSide(
               color: Colors.red,
               width: 1,
             ),
           ),
           focusedErrorBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(AppTheme.borderRadiusMedium),
-            borderSide: BorderSide(
+            borderSide: const BorderSide(
               color: Colors.red,
               width: 2,
             ),

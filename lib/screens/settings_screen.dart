@@ -983,6 +983,8 @@ class _SettingsScreenState extends State<SettingsScreen> {
   }
 
   Future<void> _importPasswords(BuildContext context) async {
+    // 保存 scaffoldMessenger 引用，用于错误处理
+    final scaffoldMessengerForError = ScaffoldMessenger.of(context);
     try {
       // 先验证主密码
       final verifiedPassword = await _showPasswordVerificationDialog(context);
@@ -1027,44 +1029,49 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
         // 解析 CSV 文件
         if (!fileName.endsWith('.csv')) {
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('不支持的文件格式，请选择 CSV 文件'),
-                backgroundColor: Colors.red,
-              ),
-            );
-          }
+          if (!mounted) return;
+          final scaffoldMessenger =
+              // ignore: use_build_context_synchronously
+              ScaffoldMessenger.of(context);
+          scaffoldMessenger.showSnackBar(
+            const SnackBar(
+              content: Text('不支持的文件格式，请选择 CSV 文件'),
+              backgroundColor: Colors.red,
+            ),
+          );
           return;
         }
 
         // 获取 CategoryService 以创建不存在的分类
+        if (!mounted) return;
         final categoryService =
+            // ignore: use_build_context_synchronously
             Provider.of<CategoryService>(context, listen: false);
+        final scaffoldMessenger =
+            // ignore: use_build_context_synchronously
+            ScaffoldMessenger.of(context);
 
         ParseResult parseResult;
         try {
           parseResult = CsvParser.parseCsv(fileContent);
           if (parseResult.items.isEmpty) {
-            if (context.mounted) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('CSV 文件中没有有效的密码项'),
-                  backgroundColor: Colors.orange,
-                ),
-              );
-            }
+            if (!mounted) return;
+            scaffoldMessenger.showSnackBar(
+              const SnackBar(
+                content: Text('CSV 文件中没有有效的密码项'),
+                backgroundColor: Colors.orange,
+              ),
+            );
             return;
           }
         } catch (e) {
-          if (context.mounted) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('CSV 解析失败: $e'),
-                backgroundColor: Colors.red,
-              ),
-            );
-          }
+          if (!mounted) return;
+          scaffoldMessenger.showSnackBar(
+            SnackBar(
+              content: Text('CSV 解析失败: $e'),
+              backgroundColor: Colors.red,
+            ),
+          );
           return;
         }
 
@@ -1088,7 +1095,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
           } else {
             // 如果分类已存在，更新颜色（如果不同）
             final currentColor = categoryService.getCategoryColor(categoryName);
-            if (currentColor.value != categoryColorValue) {
+            if (currentColor.value != categoryColorValue) { // ignore: deprecated_member_use
               try {
                 await categoryService.setCategoryColor(
                   categoryName,
@@ -1121,44 +1128,42 @@ class _SettingsScreenState extends State<SettingsScreen> {
           }
         }
 
-        if (context.mounted) {
-          String message;
-          List<String> parts = [];
+        if (!mounted) return;
+        String message;
+        List<String> parts = [];
 
-          if (categoriesCreated > 0) {
-            parts.add('创建分类: $categoriesCreated');
-          }
-
-          if (failedCount > 0) {
-            parts
-                .add('成功: $importedCount，跳过重复: $skippedCount，失败: $failedCount');
-            message = '导入完成！${parts.join('，')}';
-          } else if (skippedCount > 0) {
-            parts.add('成功: $importedCount，跳过重复: $skippedCount');
-            message = '导入完成！${parts.join('，')}';
-          } else {
-            parts.add('共导入 $importedCount 个项目');
-            message = '导入成功！${parts.join('，')}';
-          }
-
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(message),
-              duration: const Duration(seconds: 3),
-              backgroundColor: failedCount > 0 ? Colors.orange : Colors.green,
-            ),
-          );
+        if (categoriesCreated > 0) {
+          parts.add('创建分类: $categoriesCreated');
         }
-      }
-    } catch (e) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
+
+        if (failedCount > 0) {
+          parts
+              .add('成功: $importedCount，跳过重复: $skippedCount，失败: $failedCount');
+          message = '导入完成！${parts.join('，')}';
+        } else if (skippedCount > 0) {
+          parts.add('成功: $importedCount，跳过重复: $skippedCount');
+          message = '导入完成！${parts.join('，')}';
+        } else {
+          parts.add('共导入 $importedCount 个项目');
+          message = '导入成功！${parts.join('，')}';
+        }
+
+        scaffoldMessenger.showSnackBar(
           SnackBar(
-            content: Text('导入失败: $e'),
-            backgroundColor: Colors.red,
+            content: Text(message),
+            duration: const Duration(seconds: 3),
+            backgroundColor: failedCount > 0 ? Colors.orange : Colors.green,
           ),
         );
       }
+    } catch (e) {
+      if (!mounted) return;
+      scaffoldMessengerForError.showSnackBar(
+        SnackBar(
+          content: Text('导入失败: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
     }
   }
 
@@ -1359,14 +1364,18 @@ class _SettingsScreenState extends State<SettingsScreen> {
         // 如果应用已锁定，不渲染内容，等待关闭
         if (!authService.isUnlocked) {
           // 延迟关闭，确保 AuthWrapper 已经切换到 UnlockScreen
+          // 保存 context 引用，避免异步使用警告
+          final navigatorContext = context; // ignore: use_build_context_synchronously
           WidgetsBinding.instance.addPostFrameCallback((_) {
-            if (mounted) {
-              Future.delayed(const Duration(milliseconds: 150), () {
-                if (mounted && Navigator.of(context).canPop()) {
-                  Navigator.of(context).pop();
-                }
-              });
-            }
+            if (!mounted) return;
+            Future.delayed(const Duration(milliseconds: 150), () {
+              if (!mounted) return;
+              // ignore: use_build_context_synchronously
+              final navigator = Navigator.of(navigatorContext);
+              if (navigator.canPop()) {
+                navigator.pop();
+              }
+            });
           });
           // 返回一个空白页面，避免显示黑屏
           return Scaffold(
@@ -1517,7 +1526,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
         const SizedBox(width: AppTheme.spacingM),
         Text(
           title,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: AppTheme.fontSizeL,
             fontWeight: FontWeight.bold,
             color: AppTheme.textPrimary,
@@ -1577,7 +1586,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       children: [
                         Text(
                           title,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: AppTheme.fontSizeM,
                             fontWeight: FontWeight.w600,
                             color: AppTheme.textPrimary,
@@ -1586,7 +1595,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                         const SizedBox(height: 4),
                         Text(
                           subtitle,
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: AppTheme.fontSizeS,
                             color: AppTheme.textSecondary,
                           ),
@@ -1594,7 +1603,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                       ],
                     ),
                   ),
-                  Icon(
+                  const Icon(
                     Icons.chevron_right,
                     color: AppTheme.textSecondary,
                     size: 20,
@@ -1634,7 +1643,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
               children: [
                 Text(
                   title,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: AppTheme.fontSizeM,
                     fontWeight: FontWeight.w600,
                     color: AppTheme.textPrimary,
@@ -1643,7 +1652,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
                 const SizedBox(height: 4),
                 Text(
                   subtitle,
-                  style: TextStyle(
+                  style: const TextStyle(
                     fontSize: AppTheme.fontSizeS,
                     color: AppTheme.textSecondary,
                   ),
@@ -1652,7 +1661,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
             ),
           ),
           if (onTap != null)
-            Icon(
+            const Icon(
               Icons.open_in_new,
               size: 16,
               color: AppTheme.textSecondary,
@@ -1713,9 +1722,9 @@ class _AutoLockSettingsDialogState extends State<_AutoLockSettingsDialog> {
             // 左侧分类列表
             Container(
               width: 180,
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 color: AppTheme.lightBackground,
-                borderRadius: const BorderRadius.only(
+                borderRadius: BorderRadius.only(
                   topLeft: Radius.circular(AppTheme.borderRadiusLarge),
                   bottomLeft: Radius.circular(AppTheme.borderRadiusLarge),
                 ),
@@ -2096,7 +2105,7 @@ class _AutoLockSettingsDialogState extends State<_AutoLockSettingsDialog> {
               ),
             ),
             if (isSelected)
-              Icon(
+              const Icon(
                 Icons.check,
                 color: AppTheme.primaryBlue,
                 size: 20,

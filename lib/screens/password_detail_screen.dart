@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../services/storage_service.dart';
 import '../services/clipboard_service.dart';
@@ -50,7 +49,7 @@ class PasswordDetailScreen extends StatelessWidget {
                 ),
                 decoration: BoxDecoration(
                   color: AppTheme.lightSurface,
-                  border: Border(
+                  border: const Border(
                     bottom: BorderSide(color: AppTheme.borderColor, width: 1),
                   ),
                   boxShadow: [
@@ -66,7 +65,7 @@ class PasswordDetailScreen extends StatelessWidget {
                     Expanded(
                       child: Text(
                         item.title,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: AppTheme.fontSizeXL,
                           fontWeight: FontWeight.bold,
                           color: AppTheme.textPrimary,
@@ -87,8 +86,8 @@ class PasswordDetailScreen extends StatelessWidget {
                         );
                         },
                         borderRadius: BorderRadius.circular(20),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8),
+                        child: const Padding(
+                          padding: EdgeInsets.all(8),
                           child: Icon(
                             Icons.edit,
                             color: AppTheme.textTertiary,
@@ -204,7 +203,7 @@ class PasswordDetailScreen extends StatelessWidget {
 
                       // 备注
                       if (item.notes != null && item.notes!.isNotEmpty) ...[
-                        Text(
+                        const Text(
                           '备注',
                           textAlign: TextAlign.left,
                           style: TextStyle(
@@ -226,7 +225,7 @@ class PasswordDetailScreen extends StatelessWidget {
                           child: Text(
                             item.notes!,
                             textAlign: TextAlign.left,
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: AppTheme.fontSizeM,
                               color: AppTheme.textPrimary,
                               height: 1.5,
@@ -237,7 +236,7 @@ class PasswordDetailScreen extends StatelessWidget {
                       ],
 
                       // 时间信息
-                      Divider(color: AppTheme.borderColor),
+                      const Divider(color: AppTheme.borderColor),
                       const SizedBox(height: AppTheme.spacingM),
                       _InfoRow(
                         label: '创建时间',
@@ -382,7 +381,7 @@ class _DetailFieldState extends State<_DetailField> {
       children: [
         Text(
           widget.label.toUpperCase(),
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: AppTheme.fontSizeXS,
             fontWeight: FontWeight.w600,
             color: AppTheme.textSecondary,
@@ -420,7 +419,7 @@ class _DetailFieldState extends State<_DetailField> {
                       )
                     : Text(
                         widget.value,
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: AppTheme.fontSizeM,
                           color: AppTheme.textPrimary,
                         ),
@@ -453,8 +452,8 @@ class _DetailFieldState extends State<_DetailField> {
                   child: InkWell(
                     onTap: widget.onCopy,
                     borderRadius: BorderRadius.circular(20),
-                    child: Padding(
-                      padding: const EdgeInsets.all(6),
+                    child: const Padding(
+                      padding: EdgeInsets.all(6),
                       child: Icon(
                         Icons.copy_outlined,
                         size: 18,
@@ -471,8 +470,8 @@ class _DetailFieldState extends State<_DetailField> {
                   child: InkWell(
                     onTap: widget.onOpen,
                     borderRadius: BorderRadius.circular(20),
-                    child: Padding(
-                      padding: const EdgeInsets.all(6),
+                    child: const Padding(
+                      padding: EdgeInsets.all(6),
                       child: Icon(
                         Icons.open_in_new,
                         size: 18,
@@ -506,14 +505,14 @@ class _InfoRow extends StatelessWidget {
       children: [
         Text(
           label,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: AppTheme.fontSizeS,
             color: AppTheme.textSecondary,
           ),
         ),
         Text(
           value,
-          style: TextStyle(
+          style: const TextStyle(
             fontSize: AppTheme.fontSizeS,
             fontWeight: FontWeight.w500,
             color: AppTheme.textPrimary,

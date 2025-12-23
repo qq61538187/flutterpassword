@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/foundation.dart';
 import 'package:provider/provider.dart';
 import 'dart:ui';
 import '../services/auth_service.dart';
@@ -205,10 +204,10 @@ class _UnlockScreenState extends State<UnlockScreen> {
           body: ParticleBackground(
             particleCount: 30,
             child: GradientBackground(
-              colors: [
+              colors: const [
                 AppTheme.darkBackground,
-                const Color(0xFF0A0A0A),
-                const Color(0xFF1A1A2E),
+                Color(0xFF0A0A0A),
+                Color(0xFF1A1A2E),
               ],
               child: Container(
                 decoration: BoxDecoration(
@@ -226,7 +225,7 @@ class _UnlockScreenState extends State<UnlockScreen> {
                     padding: const EdgeInsets.symmetric(
                         horizontal: 40, vertical: 20),
                     child: ConstrainedBox(
-                      constraints: BoxConstraints(
+                      constraints: const BoxConstraints(
                         maxWidth: 450,
                       ),
                       child: Column(
