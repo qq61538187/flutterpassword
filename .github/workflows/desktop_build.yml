@@ -141,34 +141,26 @@ jobs:
         shell: bash
         run: |
           set -euxo pipefail
-          # 读取版本号
-          APP_VERSION="${APP_VERSION:-$(cat app_version.txt)}"
-          if [ -z "$APP_VERSION" ]; then
-            echo "❌ 无法获取应用版本号"
-            exit 1
-          fi
-          echo "📦 使用版本号: $APP_VERSION"
-          
           APP_DIR="build/macos/Build/Products/Release"
           APP_PATH="$(find "$APP_DIR" -maxdepth 1 -name '*.app' -print -quit)"
           if [ -z "$APP_PATH" ]; then
-            echo "❌ 未找到 .app 产物，目录如下："
+            echo "未找到 .app 产物，目录如下："
             ls -lah "$APP_DIR" || true
             exit 1
           fi
-          echo "✅ 找到应用: $APP_PATH"
-          
           DMG_NAME="FlutterPassword-${APP_VERSION}-macos.dmg"
-          echo "📦 创建 DMG: $DMG_NAME"
+          # 删除已存在的 DMG 文件（如果有）
+          rm -f "$DMG_NAME"
+          # 创建 DMG 文件
           hdiutil create -volname "FlutterPassword" -srcfolder "$APP_PATH" -ov -format UDZO "$DMG_NAME"
-          
-          if [ -f "$DMG_NAME" ]; then
-            echo "✅ DMG 创建成功"
-            ls -lh "$DMG_NAME"
-          else
-            echo "❌ DMG 创建失败"
+          # 验证 DMG 文件是否创建成功
+          if [ ! -f "$DMG_NAME" ]; then
+            echo "❌ DMG 文件创建失败"
             exit 1
           fi
+          # 验证文件类型
+          file "$DMG_NAME"
+          ls -lah "$DMG_NAME"
 
       - name: macOS Notarize DMG (optional)
         if: runner.os == 'macOS' && env.APPLE_ID != '' && env.APPLE_TEAM_ID != '' && env.APPLE_APP_SPECIFIC_PASSWORD != ''
@@ -260,6 +252,26 @@ jobs:
             Get-ChildItem -Path $outDir | Format-List
           }
 
+      - name: Verify DMG before upload
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          set -euxo pipefail
+          DMG_NAME="FlutterPassword-${APP_VERSION}-macos.dmg"
+          if [ ! -f "$DMG_NAME" ]; then
+            echo "❌ DMG 文件不存在: $DMG_NAME"
+            ls -lah *.dmg 2>/dev/null || echo "当前目录没有 DMG 文件"
+            exit 1
+          fi
+          echo "✅ 验证 DMG 文件:"
+          file "$DMG_NAME"
+          ls -lh "$DMG_NAME"
+          # 确保是 DMG 文件，不是目录
+          if [ -d "$DMG_NAME" ]; then
+            echo "❌ 错误：$DMG_NAME 是一个目录，不是 DMG 文件"
+            exit 1
+          fi
+      
       - name: Upload artifact (macOS)
         if: runner.os == 'macOS'
         uses: actions/upload-artifact@v4
