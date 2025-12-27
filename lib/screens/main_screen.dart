@@ -107,10 +107,30 @@ class _MainScreenState extends State<MainScreen> with WidgetsBindingObserver {
         if (!authService.isUnlocked) return;
 
         if (!hasFocus) {
-          // 窗口失去焦点
-          if (autoLockService.lockOnFocusLossDelay != null) {
-            autoLockService.handleFocusLoss(authService);
+          // 检查是否还有其他 widget 有焦点
+          // 如果还有 widget 有焦点，说明只是焦点转移，不应该触发锁定
+          final primaryFocus = FocusManager.instance.primaryFocus;
+          if (primaryFocus != null && primaryFocus.hasFocus) {
+            // 还有 widget 有焦点，只是焦点转移，不触发锁定
+            return;
           }
+
+          // 延迟一小段时间再检查，避免误判
+          // 如果在这段时间内焦点又回来了，说明只是焦点转移
+          Future.delayed(const Duration(milliseconds: 100), () {
+            if (!mounted) return;
+
+            final currentPrimaryFocus = FocusManager.instance.primaryFocus;
+            // 如果现在又有焦点，说明刚才只是焦点转移，不应该锁定
+            if (currentPrimaryFocus != null && currentPrimaryFocus.hasFocus) {
+              return;
+            }
+
+            // 窗口真正失去焦点
+            if (autoLockService.lockOnFocusLossDelay != null) {
+              autoLockService.handleFocusLoss(authService);
+            }
+          });
         } else {
           // 窗口获得焦点
           autoLockService.handleFocusGain();

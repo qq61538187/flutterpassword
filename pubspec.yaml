@@ -1,7 +1,7 @@
 name: flutterpassword
 description: 高仿 1Password 桌面密码管理器应用
 publish_to: 'none'
-version: 1.0.0+1
+version: 1.0.1+1
 
 environment:
   sdk: '>=3.0.0 <4.0.0'
